@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block content %}
+<main style="flex:1; padding: 40px; overflow-y: auto; background: #0b0f1a; color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+    <div style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+        <div>
+            <h1 style="margin: 0; text-shadow: 0 0 10px rgba(0, 242, 255, 0.5); color: #00f2ff;">Academic Timeline</h1>
+            <p style="color: #94a3b8; margin-top: 5px;">College sessions are listed separately from your own study blocks so you can see both rhythms.</p>
+        </div>
+        <button onclick="document.getElementById('add-modal').style.display='flex'" style="background: #00f2ff; color: #0b0f1a; border: none; padding: 12px 25px; border-radius: 10px; cursor: pointer; font-weight: 700; transition: 0.3s; box-shadow: 0 0 15px rgba(0, 242, 255, 0.3);">
+            + Add Schedule
+        </button>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px;">
+        <section class="card glass-effect" style="padding: 25px; border-radius: 20px; background: rgba(30, 41, 59, 0.55); border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h2 style="margin: 0; color: #00f2ff;">College Timetable</h2>
+                <span style="color: #94a3b8; font-size: 0.9rem;">{{ college_schedule|length }} entries</span>
+            </div>
+            {% if college_schedule %}
+            <div style="max-height: 420px; overflow-y: auto;">
+                {% for entry in college_schedule %}
+                <div style="padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <p style="margin: 0; font-weight: 600;">{{ entry.subject }}</p>
+                        <p style="margin: 3px 0 0 0; color: #94a3b8; font-size: 0.8rem;">{{ entry.day }} · {{ entry.start_time }} - {{ entry.end_time }}</p>
+                    </div>
+                    <a href="{{ url_for('time_table.delete_schedule', id=entry.id) }}" style="color: #ef4444; text-decoration: none; font-size: 0.85rem; border: 1px solid rgba(239, 68, 68, 0.4); padding: 4px 12px; border-radius: 8px;">Delete</a>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p style="color: #64748b; font-style: italic; margin: 0;">No college classes recorded. Use the button above to add them.</p>
+            {% endif %}
+        </section>
+
+        <section class="card glass-effect" style="padding: 25px; border-radius: 20px; background: rgba(30, 41, 59, 0.55); border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h2 style="margin: 0; color: #fbbf24;">Study Timetable</h2>
+                <span style="color: #94a3b8; font-size: 0.9rem;">{{ study_schedule|length }} entries</span>
+            </div>
+            {% if study_schedule %}
+            <div style="max-height: 420px; overflow-y: auto;">
+                {% for entry in study_schedule %}
+                <div style="padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <p style="margin: 0; font-weight: 600;">{{ entry.subject }}</p>
+                        <p style="margin: 3px 0 0 0; color: #94a3b8; font-size: 0.8rem;">{{ entry.day }} · {{ entry.start_time }} - {{ entry.end_time }}</p>
+                    </div>
+                    <a href="{{ url_for('time_table.delete_schedule', id=entry.id) }}" style="color: #ef4444; text-decoration: none; font-size: 0.85rem; border: 1px solid rgba(239, 68, 68, 0.4); padding: 4px 12px; border-radius: 8px;">Delete</a>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p style="color: #64748b; font-style: italic; margin: 0;">No study blocks yet. Add one to stay focused.</p>
+            {% endif %}
+        </section>
+    </div>
+
+    <div id="add-modal" style="display:none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(5px);">
+        <div style="background: #1e293b; padding: 35px; border-radius: 24px; width: 460px; border: 1px solid rgba(0, 242, 255, 0.3);">
+            <h3 style="margin-top: 0; color: white; font-size: 1.5rem; margin-bottom: 25px;">Add New Schedule Entry</h3>
+            <form action="{{ url_for('time_table.add_schedule') }}" method="POST" style="display: flex; flex-direction: column; gap: 16px;">
+                <input type="text" name="subject" placeholder="e.g. Data Structures" required 
+                       style="width: 100%; padding: 12px; border-radius: 8px; background: #0f172a; color: white; border: 1px solid #334155;">
+
+                <div style="display: flex; gap: 10px;">
+                    <select name="day" required style="flex: 1; padding: 12px; border-radius: 8px; background: #0f172a; color: white; border: 1px solid #334155;">
+                        <option value="Monday">Monday</option>
+                        <option value="Tuesday">Tuesday</option>
+                        <option value="Wednesday">Wednesday</option>
+                        <option value="Thursday">Thursday</option>
+                        <option value="Friday">Friday</option>
+                        <option value="Saturday">Saturday</option>
+                        <option value="Sunday">Sunday</option>
+                    </select>
+                    <select name="category" required style="flex: 1; padding: 12px; border-radius: 8px; background: #0f172a; color: white; border: 1px solid #334155;">
+                        <option value="college">College</option>
+                        <option value="study">Study</option>
+                    </select>
+                </div>
+
+                <div style="display: flex; gap: 15px;">
+                    <input type="time" name="start_time" required style="flex: 1; padding: 12px; border-radius: 8px; background: #0f172a; color: white; border: 1px solid #334155;">
+                    <input type="time" name="end_time" required style="flex: 1; padding: 12px; border-radius: 8px; background: #0f172a; color: white; border: 1px solid #334155;">
+                </div>
+
+                <div style="display: flex; gap: 15px; margin-top: 5px;">
+                    <button type="submit" style="flex: 2; background: #00f2ff; border: none; padding: 14px; border-radius: 10px; cursor: pointer; font-weight: bold; color: #0b1120;">
+                        Save Entry
+                    </button>
+                    <button type="button" onclick="document.getElementById('add-modal').style.display='none'" 
+                            style="flex: 1; background: #334155; color: white; border: none; padding: 14px; border-radius: 10px; cursor: pointer;">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
+{% endblock %}

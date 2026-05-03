@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block body_class %}auth-page student-page{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='auth.css') }}">
+{% endblock %}
+{% block content %}
+<div class="auth-shell">
+    <div class="auth-grid">
+        <section class="auth-visual">
+            <div class="doodle-grid"></div>
+            <div class="doodle-squiggle squiggle-one"></div>
+            <div class="doodle-squiggle squiggle-two"></div>
+            <div class="doodle-squiggle squiggle-three"></div>
+
+            <div class="auth-copy">
+                <span class="auth-eyebrow">Student access</span>
+                <h1>Welcome back, learner.</h1>
+                <p>
+                    Jump into your classes, study notes, timetable, and AI help with a friendly workspace
+                    made for quick revision and calmer study sessions.
+                </p>
+
+                <div class="feature-row">
+                    <span class="feature-chip">AI tutor</span>
+                    <span class="feature-chip">Voice input</span>
+                    <span class="feature-chip">Study videos</span>
+                    <span class="feature-chip">Screenshot help</span>
+                </div>
+            </div>
+
+            <div class="auth-avatar-stage">
+                <div class="avatar-card avatar-card--image">
+                    <img
+                        class="hero-image"
+                        src="{{ url_for('static', filename='images/student-login-hero.png') }}"
+                        alt="Smiling student holding books and a backpack"
+                    >
+                    <div class="avatar-caption">Your study sidekick</div>
+                    <div class="avatar-note">Ask questions, paste screenshots, or attach notes and let the assistant unpack them.</div>
+                </div>
+
+                <div class="scene-card">
+                    <div class="scene-panel">
+                        <div class="scene-label">Today at a glance</div>
+                        <div class="scene-text">
+                            A calm study dashboard with quick answers, helpful videos, and a visual-first assistant.
+                            It feels more like a notebook with a smart guide than a plain login form.
+                        </div>
+                    </div>
+                    <div class="scene-metrics">
+                        <div class="mini-metric">
+                            <strong>Fast start</strong>
+                            <span>Login in seconds and continue studying right away.</span>
+                        </div>
+                        <div class="mini-metric">
+                            <strong>Friendly UI</strong>
+                            <span>Warm colors, doodles, and a softer, student-first feel.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="auth-card">
+            <h2>Student Login</h2>
+            <p>Sign in to your personal learning space.</p>
+
+            <form class="auth-form" method="POST" action="{{ url_for('auth.login') }}">
+                <div class="auth-field">
+                    <label for="email">System Identifier</label>
+                    <input type="email" id="email" name="email" required placeholder="Enter email">
+                </div>
+
+                <div class="auth-field">
+                    <label for="password">Access Key</label>
+                    <input type="password" id="password" name="password" required placeholder="Enter password">
+                </div>
+
+                <button type="submit" class="auth-submit">Continue to Dashboard</button>
+            </form>
+
+            <div class="auth-links">
+                <span>New student? <a href="{{ url_for('auth.register') }}">Create account</a></span>
+                <span>Teacher? <a href="{{ url_for('teacher.teacher_login') }}">Teacher login</a></span>
+            </div>
+
+            <div class="auth-footnote">
+                Tip: if you want a calmer study session, try the AI assistant after login for diagrams, voice help, and video recommendations.
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock %}

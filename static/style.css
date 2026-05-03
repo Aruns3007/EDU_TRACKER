@@ -1,0 +1,165 @@
+:root {
+    --bg-dark: #07111f;
+    --sidebar-bg: #111b2d;
+    --accent: #2dd4bf;
+    --accent-2: #38bdf8;
+    --accent-warm: #f59e0b;
+    --glass: rgba(255, 255, 255, 0.055);
+    --border: rgba(148, 163, 184, 0.16);
+    --success: #10b981;
+    --warning: #fbbf24;
+    --danger: #ef4444;
+}
+
+html {
+    -webkit-text-size-adjust: 100%;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background:
+        radial-gradient(circle at top left, rgba(45, 212, 191, 0.08), transparent 25%),
+        radial-gradient(circle at bottom right, rgba(245, 158, 11, 0.08), transparent 24%),
+        var(--bg-dark);
+    color: white;
+    font-family: 'Poppins', sans-serif;
+    display: flex;
+    min-height: 100vh;
+    width: 100%;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+
+/* Sidebar Branding */
+.sidebar {
+    width: 260px;
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--border);
+    padding: 30px 20px;
+}
+
+.sidebar a {
+    white-space: nowrap;
+}
+
+.logo {
+    color: var(--accent);
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 50px;
+}
+
+/* Glassmorphism Dashboard Cards */
+.card {
+    background: var(--glass);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 25px;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+/* Eligibility Ring & Gauges */
+.gauge-wrapper {
+    position: relative;
+    width: 180px;
+    height: 180px;
+    margin: 0 auto;
+}
+
+.gauge-center-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.gauge-center-text h2 { margin: 0; font-size: 2rem; }
+.gauge-center-text p { margin: 0; font-size: 0.8rem; color: #94a3b8; }
+
+/* Action Buttons */
+button {
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.3s ease;
+}
+
+button:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(45, 212, 191, 0.24); }
+.video-container {
+    margin-top: 15px;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(45, 212, 191, 0.28);
+    box-shadow: 0 0 15px rgba(45, 212, 191, 0.16);
+    background: #000;
+}
+
+.video-container iframe {
+    display: block;
+    width: 100%;
+}
+
+img,
+video,
+canvas,
+svg {
+    max-width: 100%;
+}
+
+input,
+textarea,
+select,
+button {
+    font: inherit;
+}
+
+@media (max-width: 900px) {
+    body {
+        display: block;
+        min-height: 100dvh;
+        overflow-y: auto;
+    }
+
+    .sidebar {
+        width: 100%;
+        padding: 16px;
+        border-right: 0;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+        margin-bottom: 18px;
+    }
+
+    .sidebar a {
+        justify-content: center;
+        margin: 0;
+    }
+
+    .card {
+        padding: 18px;
+        border-radius: 18px;
+    }
+
+    .gauge-wrapper {
+        width: min(180px, 60vw);
+        height: min(180px, 60vw);
+    }
+
+    button {
+        max-width: 100%;
+    }
+}

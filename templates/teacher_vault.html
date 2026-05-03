@@ -1,0 +1,404 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+    .vault-page {
+        width: min(1540px, 100%);
+        margin: 0 auto;
+        box-sizing: border-box;
+        padding: 26px;
+        color: #e7eef8;
+        background:
+            radial-gradient(circle at top right, rgba(34, 211, 238, 0.10), transparent 28%),
+            radial-gradient(circle at bottom left, rgba(59, 130, 246, 0.10), transparent 26%),
+            linear-gradient(180deg, #020617 0%, #0b1220 48%, #111827 100%);
+    }
+
+    .vault-hero {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 18px;
+        align-items: center;
+        margin-bottom: 22px;
+        padding: 24px 26px;
+        border: 1px solid rgba(148, 163, 184, 0.14);
+        border-radius: 28px;
+        background: linear-gradient(135deg, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.76));
+        box-shadow: 0 28px 80px rgba(0, 0, 0, 0.28);
+        backdrop-filter: blur(18px);
+    }
+
+    .eyebrow {
+        margin: 0 0 10px 0;
+        color: #22d3ee;
+        text-transform: uppercase;
+        letter-spacing: 2.4px;
+        font-size: 0.76rem;
+        font-weight: 700;
+    }
+
+    .vault-hero h1 {
+        margin: 0;
+        color: #fff;
+        font-size: clamp(2.1rem, 3.6vw, 3.15rem);
+        letter-spacing: -0.04em;
+        line-height: 1.05;
+    }
+
+    .vault-hero p {
+        margin: 10px 0 0 0;
+        color: #94a3b8;
+        max-width: 860px;
+        line-height: 1.6;
+    }
+
+    .vault-actions {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+    }
+
+    .btn {
+        border: 0;
+        border-radius: 14px;
+        padding: 11px 16px;
+        text-decoration: none;
+        font-weight: 700;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 42px;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #22d3ee, #3b82f6);
+        color: #04111d;
+        box-shadow: 0 14px 30px rgba(34, 211, 238, 0.16);
+    }
+
+    .btn-soft {
+        background: rgba(148, 163, 184, 0.12);
+        color: #e2e8f0;
+        border: 1px solid rgba(148, 163, 184, 0.16);
+    }
+
+    .btn:hover {
+        transform: translateY(-1px);
+        filter: brightness(1.03);
+    }
+
+    .stat-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 16px;
+        margin-bottom: 22px;
+    }
+
+    .stat-card,
+    .panel,
+    .note-card {
+        position: relative;
+        overflow: hidden;
+        background: linear-gradient(180deg, rgba(15, 23, 42, 0.92), rgba(15, 23, 42, 0.78));
+        border: 1px solid rgba(148, 163, 184, 0.14);
+        border-radius: 22px;
+        box-shadow: 0 18px 48px rgba(0, 0, 0, 0.24);
+        backdrop-filter: blur(16px);
+    }
+
+    .stat-card::before,
+    .panel::before,
+    .note-card::before {
+        content: "";
+        position: absolute;
+        inset: 0 0 auto 0;
+        height: 3px;
+        background: linear-gradient(90deg, #22d3ee, transparent 65%);
+        opacity: 0.9;
+    }
+
+    .stat-card {
+        padding: 18px;
+        min-height: 138px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 8px;
+    }
+
+    .stat-card h3 {
+        margin: 0;
+        color: #94a3b8;
+        font-size: 0.76rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 700;
+    }
+
+    .stat-card strong {
+        display: block;
+        margin-top: 4px;
+        font-size: 2.2rem;
+        color: #fff;
+        letter-spacing: -0.04em;
+    }
+
+    .stat-card span {
+        display: block;
+        color: #94a3b8;
+        font-size: 0.88rem;
+        line-height: 1.4;
+    }
+
+    .toolbar {
+        display: grid;
+        grid-template-columns: 1.4fr 0.6fr;
+        gap: 18px;
+        margin-bottom: 18px;
+    }
+
+    .panel {
+        padding: 20px;
+    }
+
+    .panel h2 {
+        margin: 0 0 10px 0;
+        color: #fff;
+        font-size: 1.2rem;
+        letter-spacing: -0.02em;
+    }
+
+    .panel .subtle {
+        color: #94a3b8;
+        margin: 0 0 16px 0;
+        font-size: 0.92rem;
+        line-height: 1.55;
+    }
+
+    .stack {
+        display: grid;
+        gap: 12px;
+    }
+
+    .field,
+    .textarea {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 12px 14px;
+        border-radius: 14px;
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        background: rgba(2, 6, 23, 0.56);
+        color: white;
+        outline: none;
+    }
+
+    .field:focus,
+    .textarea:focus {
+        border-color: rgba(34, 211, 238, 0.38);
+        box-shadow: 0 0 0 4px rgba(34, 211, 238, 0.08);
+    }
+
+    .textarea {
+        min-height: 110px;
+        resize: vertical;
+    }
+
+    .notes-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 16px;
+    }
+
+    .note-card {
+        padding: 18px;
+        display: grid;
+        gap: 12px;
+    }
+
+    .note-top {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        align-items: flex-start;
+        flex-wrap: wrap;
+    }
+
+    .note-title {
+        margin: 0;
+        color: white;
+        font-size: 1.05rem;
+    }
+
+    .note-meta {
+        color: #94a3b8;
+        font-size: 0.86rem;
+        line-height: 1.45;
+    }
+
+    .badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 6px 10px;
+        border-radius: 999px;
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.02em;
+        border: 1px solid transparent;
+        white-space: nowrap;
+    }
+
+    .badge-approved {
+        background: rgba(59, 130, 246, 0.14);
+        color: #93c5fd;
+        border-color: rgba(59, 130, 246, 0.18);
+    }
+
+    .badge-warm {
+        background: rgba(245, 158, 11, 0.14);
+        color: #fbbf24;
+        border-color: rgba(245, 158, 11, 0.18);
+    }
+
+    .note-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .note-content {
+        color: #cbd5e1;
+        line-height: 1.55;
+        margin: 0;
+    }
+
+    .empty-state {
+        color: #94a3b8;
+        font-style: italic;
+    }
+
+    @media (max-width: 1024px) {
+        .vault-hero,
+        .toolbar {
+            grid-template-columns: 1fr;
+        }
+
+        .vault-actions {
+            justify-content: flex-start;
+        }
+    }
+
+    @media (max-width: 720px) {
+        .vault-page {
+            padding: 18px;
+        }
+
+        .vault-hero,
+        .panel {
+            padding: 18px;
+            border-radius: 20px;
+        }
+    }
+</style>
+
+<div class="vault-page">
+    <div class="vault-hero">
+        <div>
+            <p class="eyebrow">Teacher Vault</p>
+            <h1>Store notes and files for your students in one clean place.</h1>
+            <p>
+                Upload shared notes, attach PDFs or images, and keep everything organized for the current subject.
+                Students will see the shared material in their dashboards and assistant context.
+            </p>
+        </div>
+        <div class="vault-actions">
+            <a class="btn btn-soft" href="{{ url_for('teacher.dashboard') }}">Back to Dashboard</a>
+            <a class="btn btn-primary" href="#upload-note">Add Resource</a>
+        </div>
+    </div>
+
+    <div class="stat-grid">
+        <div class="stat-card">
+            <h3>Vault Items</h3>
+            <strong>{{ note_count }}</strong>
+            <span>Total notes and shared files saved here</span>
+        </div>
+        <div class="stat-card">
+            <h3>Attachments</h3>
+            <strong>{{ attachment_count }}</strong>
+            <span>Files ready for students to open</span>
+        </div>
+        <div class="stat-card">
+            <h3>Current Subject</h3>
+            <strong style="font-size: 1.5rem;">{{ current_subject }}</strong>
+            <span>Vault is filtered to your teaching subject</span>
+        </div>
+    </div>
+
+    <div class="toolbar">
+        <section id="upload-note" class="panel">
+            <h2>Share a New Resource</h2>
+            <p class="subtle">
+                Send a note or attach a file. Students can use these resources from their dashboard and AI assistant.
+            </p>
+
+            <form action="{{ url_for('teacher.create_teacher_note') }}" method="POST" enctype="multipart/form-data" class="stack">
+                <input type="text" name="title" class="field" placeholder="Resource title" required>
+                <textarea name="content" class="textarea" placeholder="Write the note for students"></textarea>
+                <input type="file" name="attachment" class="field" accept=".pdf,.doc,.docx,.ppt,.pptx,.png,.jpg,.jpeg,.webp,.txt,.md">
+                <button type="submit" class="btn btn-primary" style="border-radius:12px;">Save to Vault</button>
+            </form>
+        </section>
+
+        <section class="panel">
+            <h2>Search Vault</h2>
+            <p class="subtle">Find old notes or attached files quickly.</p>
+            <form method="GET" action="{{ url_for('teacher.vault') }}" class="stack">
+                <input type="text" name="q" class="field" value="{{ search or '' }}" placeholder="Search by title, subject, file, or note text">
+                <button type="submit" class="btn btn-soft" style="border-radius:12px;">Search</button>
+                {% if search %}
+                <a class="btn btn-soft" href="{{ url_for('teacher.vault') }}" style="border-radius:12px;">Clear Search</a>
+                {% endif %}
+            </form>
+        </section>
+    </div>
+
+    <section class="panel">
+        <h2>Vault Library</h2>
+        <p class="subtle">Everything you save here is kept together for your students. Use the delete action to remove outdated items.</p>
+
+        <div class="notes-grid">
+            {% for note in notes %}
+            <article class="note-card">
+                <div class="note-top">
+                    <div>
+                        <h3 class="note-title">{{ note.title }}</h3>
+                        <div class="note-meta">{{ note.subject }} | {{ note.created_at.strftime('%d %b %Y') if note.created_at else 'No date' }}</div>
+                    </div>
+                    <span class="badge {{ 'badge-warm' if note.attachment_path else 'badge-approved' }}">
+                        {{ 'File' if note.attachment_path else 'Note' }}
+                    </span>
+                </div>
+
+                {% if note.content %}
+                <p class="note-content">{{ note.content[:220] }}{% if note.content|length > 220 %}...{% endif %}</p>
+                {% endif %}
+
+                {% if note.attachment_path %}
+                <a href="{{ url_for('static', filename=note.attachment_path) }}" target="_blank" rel="noopener noreferrer" style="color:#7dd3fc; text-decoration:none; font-weight:700;">Open attached file</a>
+                {% endif %}
+
+                <div class="note-actions">
+                    <form action="{{ url_for('teacher.delete_teacher_note', note_id=note.id) }}" method="POST" style="margin:0;">
+                        <button type="submit" class="btn btn-soft" style="border-radius:12px;" onclick="return confirm('Delete this vault item?');">Delete</button>
+                    </form>
+                </div>
+            </article>
+            {% else %}
+            <div class="empty-state">No vault items yet. Add the first resource for your students.</div>
+            {% endfor %}
+        </div>
+    </section>
+</div>
+{% endblock %}

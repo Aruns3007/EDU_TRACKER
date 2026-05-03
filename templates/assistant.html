@@ -1,0 +1,288 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+    /* 1. Cinematic Background */
+    #particles-js {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background-color: #020617;
+        z-index: 0;
+    }
+
+    /* 2. Chat Interface (Gemini Style) */
+    .chat-container {
+        position: relative;
+        z-index: 10;
+        display: flex;
+        flex-direction: column;
+        height: 85vh;
+        max-width: 1000px;
+        margin: 20px auto;
+        background: rgba(15, 23, 42, 0.8);
+        backdrop-filter: blur(16px);
+        border: 1px solid rgba(0, 242, 255, 0.2);
+        border-radius: 24px;
+        overflow: hidden;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    }
+
+    .terminal-header {
+        padding: 15px 25px;
+        background: rgba(0, 0, 0, 0.4);
+        border-bottom: 1px solid rgba(0, 242, 255, 0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    #chat-window {
+        flex: 1;
+        overflow-y: auto;
+        padding: 30px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        scroll-behavior: smooth;
+    }
+
+    /* 3. Message Bubbles */
+    .message {
+        max-width: 80%;
+        padding: 14px 20px;
+        border-radius: 18px;
+        font-size: 1rem;
+        line-height: 1.6;
+        animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    .user-message {
+        align-self: flex-end;
+        background: linear-gradient(135deg, #7000ff, #00f2ff);
+        color: white;
+        border-bottom-right-radius: 4px;
+    }
+
+    .ai-message {
+        align-self: flex-start;
+        background: rgba(255, 255, 255, 0.05);
+        color: #e2e8f0;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-bottom-left-radius: 4px;
+    }
+
+    /* 4. Media & Study Tools */
+    .media-card {
+        margin-top: 15px;
+        background: #0f172a;
+        border-radius: 15px;
+        overflow: hidden;
+        border: 1px solid rgba(0, 242, 255, 0.3);
+    }
+
+    .media-card img { width: 100%; display: block; }
+
+    .yt-btn {
+        display: block;
+        text-align: center;
+        background: #ff0000;
+        color: white !important;
+        padding: 10px;
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+    /* 5. Input Area */
+    .input-area {
+        padding: 20px;
+        display: flex;
+        gap: 12px;
+        background: rgba(0, 0, 0, 0.3);
+    }
+
+    input#user-input {
+        flex: 1;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid #334155;
+        border-radius: 12px;
+        color: white;
+        padding: 14px;
+        outline: none;
+        transition: 0.3s;
+    }
+
+    input#user-input:focus { border-color: #00f2ff; }
+
+    .mic-btn {
+        width: 50px;
+        background: rgba(0, 242, 255, 0.1);
+        border: 1px solid #00f2ff;
+        border-radius: 12px;
+        cursor: pointer;
+        font-size: 1.2rem;
+        transition: 0.3s;
+    }
+
+    .mic-btn.listening {
+        background: #ef4444;
+        border-color: #ff0000;
+        animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+
+    #chat-window::-webkit-scrollbar { width: 6px; }
+    #chat-window::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+</style>
+
+<div id="particles-js"></div>
+
+<div class="chat-container">
+    <div class="terminal-header">
+        <span style="color: #00f2ff; font-family: monospace; font-weight: bold;">&gt; GEMINI_LITE_CORE</span>
+        <span id="status-light" style="color: #10b981;">● SYSTEM READY</span>
+    </div>
+
+    <div id="chat-window">
+        <div class="message ai-message">
+            Hello! I am your AI Study Assistant. You can type your questions, use the microphone to speak, or ask me for diagrams and educational videos.
+        </div>
+    </div>
+
+    <div class="input-area">
+        <button class="mic-btn" id="mic-btn" title="Voice Search">🎤</button>
+        <input type="text" id="user-input" placeholder="Enter your study topic (e.g. explain photosynthesis)..." autocomplete="off">
+        <button class="mic-btn" style="background:#00f2ff; color:#000;" onclick="sendMessage()">➤</button>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/particles.js/2.0.0/particles.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+<script>
+    particlesJS("particles-js", {
+        particles: { number: { value: 50 }, color: { value: "#00f2ff" }, line_linked: { enable: true, color: "#7000ff", opacity: 0.2 }, move: { speed: 1 } }
+    });
+
+    // --- VOICE RECOGNITION ---
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    let recognition = null; // Initialize to null
+    let isListening = false;
+    let messageSentByMicStop = false; // Flag to prevent double sending
+
+    function initSpeechRecognition() {
+        recognition = new SpeechRecognition();
+        recognition.continuous = true;
+        recognition.interimResults = true;
+        recognition.lang = 'en-US';
+
+        recognition.onstart = () => {
+            isListening = true;
+            document.getElementById('mic-btn').classList.add('listening');
+            document.getElementById('mic-btn').innerHTML = '🔴'; // Visual cue for recording
+            document.getElementById('status-light').textContent = '● MIC ACTIVE: SPEAKING...';
+            document.getElementById('status-light').style.color = '#ef4444';
+        };
+
+        recognition.onresult = (event) => {
+            let transcript = '';
+            for (let i = 0; i < event.results.length; ++i) {
+                transcript += event.results[i][0].transcript;
+            }
+            document.getElementById('user-input').value = transcript;
+        };
+
+        recognition.onerror = (event) => {
+            console.error("Speech Recognition Error:", event.error);
+            isListening = false;
+            document.getElementById('mic-btn').classList.remove('listening');
+            
+            const light = document.getElementById('status-light');
+            if (event.error === 'not-allowed') {
+                light.textContent = '● ERROR: MIC BLOCKED';
+            } else if (event.error === 'no-speech') {
+                light.textContent = '● SYSTEM READY';
+                return;
+            } else {
+                light.textContent = '● ERROR: ' + event.error.toUpperCase();
+            }
+            light.style.color = '#ef4444';
+        };
+
+        recognition.onend = () => {
+            isListening = false;
+            document.getElementById('mic-btn').classList.remove('listening');
+            document.getElementById('status-light').textContent = '● SYSTEM READY';
+            document.getElementById('status-light').style.color = '#10b981';
+        };
+
+        document.getElementById('mic-btn').addEventListener('click', () => {
+            if (isListening) {
+                recognition.stop();
+            } else {
+                recognition.start();
+            }
+        });
+    } else {
+        document.getElementById('mic-btn').style.opacity = '0.5';
+        document.getElementById('mic-btn').title = "Speech recognition not supported in this browser.";
+    }
+
+    // --- MESSAGE PROCESSING ---
+    function formatAIResponse(text) {
+        // Handle Images: IMAGE_LINK:[url](title)
+        let html = text.replace(/IMAGE_LINK:\[(.*?)\]\((.*?)\)/g, (m, url, title) => {
+            return `<div class="media-card"><img src="${url}" alt="${title}"><div style="padding:10px; font-size:0.8rem;">${title}</div></div>`;
+        });
+
+        // Handle Videos: VIDEO_LINK:[url](title)
+        html = html.replace(/VIDEO_LINK:\[(.*?)\]\((.*?)\)/g, (m, url, title) => {
+            let videoId = url.includes('v=') ? url.split('v=')[1] : url.split('/').pop();
+            return `
+                <div class="media-card">
+                    <iframe width="100%" height="250" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>
+                    <a href="${url}" target="_blank" class="yt-btn">Open on YouTube</a>
+                </div>`;
+        });
+
+        return marked.parse(html);
+    }
+
+    function appendMessage(content, type) {
+        const chatWindow = document.getElementById('chat-window');
+        const msgDiv = document.createElement('div');
+        msgDiv.className = `message ${type}`;
+        
+        if (type === 'ai-message') msgDiv.innerHTML = formatAIResponse(content);
+        else msgDiv.textContent = content;
+
+        chatWindow.appendChild(msgDiv);
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+    }
+
+    async function sendMessage() {
+        const input = document.getElementById('user-input');
+        const text = input.value.trim();
+        if (!text) return;
+
+        appendMessage(text, 'user-message');
+        input.value = '';
+
+        try {
+            const response = await fetch('/ask', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: text })
+            });
+            const data = await response.json();
+            appendMessage(data.response, 'ai-message');
+        } catch (e) {
+            appendMessage("Error: Could not reach the AI core.", 'ai-message');
+        }
+    }
+
+    document.getElementById('user-input').addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
+</script>
+{% endblock %}

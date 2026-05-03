@@ -1,0 +1,888 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+    .teacher-page {
+        --bg: #050816;
+        --panel: rgba(10, 18, 32, 0.9);
+        --panel-2: rgba(15, 23, 42, 0.82);
+        --border: rgba(148, 163, 184, 0.14);
+        --text: #e7eef8;
+        --muted: #94a3b8;
+        --accent: #22d3ee;
+        --accent-2: #3b82f6;
+        --warm: #f59e0b;
+        width: min(1680px, 100%);
+        margin: 0 auto;
+        box-sizing: border-box;
+        padding: 26px;
+        color: var(--text);
+        background:
+            radial-gradient(circle at top right, rgba(34, 211, 238, 0.10), transparent 28%),
+            radial-gradient(circle at bottom left, rgba(59, 130, 246, 0.10), transparent 26%),
+            linear-gradient(180deg, #020617 0%, #0b1220 56%, #111827 100%);
+    }
+
+    .hero,
+    .panel,
+    .chart-card,
+    .stat-card,
+    .approval-card,
+    .risk-item {
+        position: relative;
+        overflow: hidden;
+        background: linear-gradient(180deg, var(--panel), var(--panel-2));
+        border: 1px solid var(--border);
+        border-radius: 22px;
+        box-shadow: 0 18px 48px rgba(0, 0, 0, 0.24);
+        backdrop-filter: blur(16px);
+    }
+
+    .hero::before,
+    .panel::before,
+    .chart-card::before,
+    .stat-card::before,
+    .approval-card::before,
+    .risk-item::before {
+        content: "";
+        position: absolute;
+        inset: 0 0 auto 0;
+        height: 3px;
+        background: linear-gradient(90deg, var(--accent), transparent 70%);
+        opacity: 0.9;
+    }
+
+    .hero {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 18px;
+        align-items: center;
+        margin-bottom: 18px;
+        padding: 24px 26px;
+        border-radius: 28px;
+    }
+
+    .eyebrow {
+        margin: 0 0 10px 0;
+        color: var(--accent);
+        text-transform: uppercase;
+        letter-spacing: 2.4px;
+        font-size: 0.76rem;
+        font-weight: 700;
+    }
+
+    .hero h1 {
+        margin: 0;
+        color: #ffffff;
+        font-size: clamp(2rem, 3.4vw, 3.15rem);
+        letter-spacing: -0.04em;
+        line-height: 1.05;
+    }
+
+    .hero p {
+        margin: 10px 0 0 0;
+        color: var(--muted);
+        max-width: 900px;
+        line-height: 1.6;
+    }
+
+    .hero-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+    }
+
+    .btn {
+        border: 0;
+        border-radius: 14px;
+        padding: 11px 16px;
+        text-decoration: none;
+        font-weight: 700;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 42px;
+    }
+
+    .btn:hover {
+        transform: translateY(-1px);
+        filter: brightness(1.03);
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--accent), var(--accent-2));
+        color: #04111d;
+        box-shadow: 0 14px 30px rgba(34, 211, 238, 0.16);
+    }
+
+    .btn-soft {
+        background: rgba(148, 163, 184, 0.12);
+        color: #e2e8f0;
+        border: 1px solid rgba(148, 163, 184, 0.16);
+    }
+
+    .stat-grid,
+    .chart-grid,
+    .focus-grid,
+    .module-stack {
+        display: grid;
+        gap: 16px;
+        margin-bottom: 18px;
+    }
+
+    .stat-grid {
+        grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    }
+
+    .chart-grid {
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    }
+
+    .focus-grid {
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    }
+
+    .stat-card {
+        padding: 18px;
+        min-height: 130px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 8px;
+    }
+
+    .stat-card h3 {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.76rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 700;
+    }
+
+    .stat-card strong {
+        display: block;
+        margin-top: 4px;
+        font-size: 2.15rem;
+        color: #ffffff;
+        letter-spacing: -0.04em;
+    }
+
+    .stat-card span {
+        display: block;
+        color: var(--muted);
+        font-size: 0.88rem;
+        line-height: 1.45;
+    }
+
+    .panel,
+    .chart-card {
+        padding: 20px;
+    }
+
+    .panel h2,
+    .chart-card h2 {
+        margin: 0 0 8px 0;
+        color: #ffffff;
+        font-size: 1.18rem;
+        letter-spacing: -0.02em;
+    }
+
+    .subtle {
+        color: var(--muted);
+        margin: 0 0 16px 0;
+        font-size: 0.92rem;
+        line-height: 1.55;
+    }
+
+    .panel-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        margin-bottom: 12px;
+    }
+
+    .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 7px 11px;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        font-weight: 800;
+        letter-spacing: 0.02em;
+        border: 1px solid transparent;
+        white-space: nowrap;
+    }
+
+    .pill-accent {
+        background: rgba(34, 211, 238, 0.12);
+        color: #7dd3fc;
+        border-color: rgba(34, 211, 238, 0.18);
+    }
+
+    .pill-warm {
+        background: rgba(245, 158, 11, 0.12);
+        color: #fbbf24;
+        border-color: rgba(245, 158, 11, 0.18);
+    }
+
+    .pill-danger {
+        background: rgba(239, 68, 68, 0.12);
+        color: #fca5a5;
+        border-color: rgba(239, 68, 68, 0.18);
+    }
+
+    .table-wrap {
+        overflow-x: auto;
+        border: 1px solid rgba(148, 163, 184, 0.12);
+        border-radius: 18px;
+        background: rgba(2, 6, 23, 0.22);
+    }
+
+    .data-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        min-width: 680px;
+    }
+
+    .data-table th,
+    .data-table td {
+        text-align: left;
+        padding: 14px 12px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        vertical-align: top;
+    }
+
+    .data-table th {
+        color: #a7b4c8;
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 1.2px;
+        background: rgba(2, 6, 23, 0.48);
+        position: sticky;
+        top: 0;
+        z-index: 1;
+    }
+
+    .data-table tbody tr:hover td {
+        background: rgba(255, 255, 255, 0.02);
+    }
+
+    .stack {
+        display: grid;
+        gap: 12px;
+    }
+
+    .field,
+    .textarea {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 12px 14px;
+        border-radius: 14px;
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        background: rgba(2, 6, 23, 0.56);
+        color: white;
+        outline: none;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    }
+
+    .field:focus,
+    .textarea:focus {
+        border-color: rgba(34, 211, 238, 0.38);
+        box-shadow: 0 0 0 4px rgba(34, 211, 238, 0.08);
+        transform: translateY(-1px);
+    }
+
+    .textarea {
+        min-height: 96px;
+        resize: vertical;
+    }
+
+    .badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 6px 10px;
+        border-radius: 999px;
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.02em;
+        border: 1px solid transparent;
+    }
+
+    .badge-present {
+        background: rgba(34, 197, 94, 0.14);
+        color: #86efac;
+        border-color: rgba(34, 197, 94, 0.16);
+    }
+
+    .badge-absent {
+        background: rgba(239, 68, 68, 0.14);
+        color: #fca5a5;
+        border-color: rgba(239, 68, 68, 0.16);
+    }
+
+    .badge-pending {
+        background: rgba(245, 158, 11, 0.14);
+        color: #fbbf24;
+        border-color: rgba(245, 158, 11, 0.18);
+    }
+
+    .badge-approved {
+        background: rgba(59, 130, 246, 0.14);
+        color: #93c5fd;
+        border-color: rgba(59, 130, 246, 0.18);
+    }
+
+    .badge-rejected {
+        background: rgba(239, 68, 68, 0.14);
+        color: #fca5a5;
+        border-color: rgba(239, 68, 68, 0.16);
+    }
+
+    .approval-card,
+    .risk-item {
+        padding: 16px;
+    }
+
+    .approval-top {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    .approval-meta {
+        color: var(--muted);
+        font-size: 0.88rem;
+        line-height: 1.45;
+    }
+
+    .progress {
+        width: 100%;
+        height: 10px;
+        border-radius: 999px;
+        background: rgba(148, 163, 184, 0.12);
+        overflow: hidden;
+    }
+
+    .progress-bar {
+        height: 100%;
+        border-radius: inherit;
+        background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    }
+
+    .chart-box {
+        width: 100%;
+        min-height: 280px;
+    }
+
+    .muted {
+        color: var(--muted);
+    }
+
+    .dashboard-switches {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 16px;
+    }
+
+    .mini-note {
+        border-radius: 18px;
+        padding: 14px 16px;
+        background: rgba(2, 6, 23, 0.24);
+        border: 1px solid rgba(148, 163, 184, 0.1);
+        color: #cbd5e1;
+    }
+
+    .two-col {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 18px;
+        margin-bottom: 18px;
+    }
+
+    @media (max-width: 1220px) {
+        .hero,
+        .two-col {
+            grid-template-columns: 1fr;
+        }
+
+        .hero-actions {
+            justify-content: flex-start;
+        }
+    }
+
+    @media (max-width: 1024px) {
+        .teacher-page {
+            padding: 18px;
+        }
+    }
+
+    @media (max-width: 720px) {
+        .teacher-page {
+            padding: 16px;
+        }
+
+        .hero,
+        .panel,
+        .chart-card {
+            padding: 18px;
+            border-radius: 20px;
+        }
+
+        .stat-card strong {
+            font-size: 1.9rem;
+        }
+
+        .data-table {
+            min-width: 620px;
+        }
+    }
+</style>
+
+<div class="teacher-page">
+    <section class="hero">
+        <div>
+            <p class="eyebrow">Teacher Control Center</p>
+            <h1>
+                {% if active_view == 'overview' %}
+                    Overview dashboard
+                {% elif active_view == 'attendance' %}
+                    Attendance review
+                {% elif active_view == 'students' %}
+                    Student insights
+                {% elif active_view == 'homework' %}
+                    Homework center
+                {% elif active_view == 'notes' %}
+                    Teacher notes
+                {% endif %}
+            </h1>
+            <p>
+                {% if active_view == 'overview' %}
+                    A clean, chart-first view with the most important numbers up front.
+                {% elif active_view == 'attendance' %}
+                    Review submissions, approve what is correct, and reject what needs fixing.
+                {% elif active_view == 'students' %}
+                    Focus on at-risk students and see who needs attention first.
+                {% elif active_view == 'homework' %}
+                    Create and manage homework for your subject in one place.
+                {% elif active_view == 'notes' %}
+                    Send class notes and attachments to the current subject group.
+                {% endif %}
+            </p>
+            <p class="muted" style="margin-top:12px;"><strong style="color:white;">Active subject:</strong> {{ current_subject }}</p>
+            <div class="dashboard-switches">
+                <a class="btn btn-soft" href="{{ url_for('teacher.dashboard', view='overview') }}">Overview</a>
+                <a class="btn btn-soft" href="{{ url_for('teacher.dashboard', view='attendance') }}">Attendance</a>
+                <a class="btn btn-soft" href="{{ url_for('teacher.dashboard', view='students') }}">Students</a>
+                <a class="btn btn-soft" href="{{ url_for('teacher.dashboard', view='homework') }}">Homework</a>
+                <a class="btn btn-soft" href="{{ url_for('teacher.dashboard', view='notes') }}">Notes</a>
+            </div>
+        </div>
+        <div class="hero-actions">
+            <a class="btn btn-soft" href="{{ url_for('teacher.export_attendance') }}">Export Spreadsheet</a>
+            <a class="btn btn-soft" href="{{ url_for('teacher.vault') }}">Open Vault</a>
+            <a class="btn btn-primary" href="{{ url_for('teacher.dashboard', view=active_view) }}">Refresh View</a>
+        </div>
+    </section>
+
+    {% if active_view == 'overview' %}
+    <section class="stat-grid">
+        <div class="stat-card">
+            <h3>Students</h3>
+            <strong>{{ total_students }}</strong>
+            <span>Students linked to {{ current_subject }}</span>
+        </div>
+        <div class="stat-card">
+            <h3>Pending</h3>
+            <strong>{{ pending_count }}</strong>
+            <span>Waiting for your review</span>
+        </div>
+        <div class="stat-card">
+            <h3>Approved</h3>
+            <strong>{{ approved_total }}</strong>
+            <span>Total approved records for {{ current_subject }}</span>
+        </div>
+        <div class="stat-card">
+            <h3>Approval Rate</h3>
+            <strong>{{ approval_rate }}%</strong>
+            <span>Approved out of all submissions</span>
+        </div>
+        <div class="stat-card">
+            <h3>Attendance Rate</h3>
+            <strong>{{ attendance_rate }}%</strong>
+            <span>Present among approved records</span>
+        </div>
+        <div class="stat-card">
+            <h3>Homework Items</h3>
+            <strong>{{ total_homeworks }}</strong>
+            <span>{{ current_subject }} homework in SQLite</span>
+        </div>
+    </section>
+
+    <section class="chart-grid">
+        <div class="chart-card">
+            <div class="panel-head">
+                <div>
+                    <h2>Review Status</h2>
+                    <p class="subtle">A quick view of approved, pending, and rejected submissions.</p>
+                </div>
+                <span class="pill pill-accent">Live summary</span>
+            </div>
+            <div class="chart-box">
+                <canvas id="approvalChart"></canvas>
+            </div>
+        </div>
+        <div class="chart-card">
+            <div class="panel-head">
+                <div>
+                    <h2>Attendance Split</h2>
+                    <p class="subtle">Compare present and absent records among the approved entries.</p>
+                </div>
+                <span class="pill pill-warm">Student trend</span>
+            </div>
+            <div class="chart-box">
+                <canvas id="presenceChart"></canvas>
+            </div>
+        </div>
+    </section>
+
+    <section class="two-col">
+        <div class="panel">
+            <div class="panel-head">
+                <div>
+                    <h2>Current Attention</h2>
+                    <p class="subtle">A compact list of students and submissions that need a quick look.</p>
+                </div>
+                <span class="pill pill-danger">{{ at_risk_students|length }} at risk</span>
+            </div>
+
+            <div class="stack">
+                {% for item in at_risk_students[:3] %}
+                <div class="risk-item">
+                    <div style="display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap;">
+                        <strong style="color:white;">{{ item.student.name }}</strong>
+                        <span class="badge badge-absent">{{ item.attendance_rate }}%</span>
+                    </div>
+                    <div class="muted" style="margin-top:6px;">{{ item.pending_total }} pending, {{ item.approved_total }} approved logs</div>
+                    <div class="progress" style="margin-top:10px;">
+                        <div class="progress-bar" style="width: {{ item.attendance_rate if item.attendance_rate <= 100 else 100 }}%;"></div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="mini-note">No at-risk students yet. Nice work.</div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-head">
+                <div>
+                    <h2>Recent Activity</h2>
+                    <p class="subtle">The latest submissions and approvals in this subject.</p>
+                </div>
+                <span class="pill pill-accent">Latest 5</span>
+            </div>
+
+            <div class="stack">
+                {% for row in recent_pending_rows %}
+                <div class="mini-note">
+                    <strong style="color:white;">Pending: {{ row.student_name or 'Unknown student' }}</strong>
+                    <div class="muted">{{ row.subject }} | {{ row.status }} | {{ row.date.strftime('%d %b %Y') if row.date else '-' }}</div>
+                </div>
+                {% else %}
+                <div class="mini-note">No pending attendance right now.</div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    {% elif active_view == 'attendance' %}
+    <section class="panel">
+        <div class="panel-head">
+            <div>
+                <h2>Pending Attendance Review</h2>
+                <p class="subtle">Approve or reject student submissions from here.</p>
+            </div>
+            <span class="pill pill-warm">{{ recent_pending_rows|length }} shown</span>
+        </div>
+
+        <div class="stack" style="margin-bottom:18px;">
+            {% for row in recent_pending_rows %}
+            <div class="approval-card">
+                <div class="approval-top">
+                    <div>
+                        <strong style="color:white;">{{ row.student_name or 'Unknown student' }}</strong>
+                        <div class="approval-meta">{{ row.student_id or 'No ID' }} | {{ row.subject }}</div>
+                    </div>
+                    <span class="badge badge-pending">{{ row.approval_status or 'Pending' }}</span>
+                </div>
+                <div class="approval-meta">
+                    {{ row.date.strftime('%d %b %Y') if row.date else '-' }} | Status: {{ row.status }}
+                </div>
+                <div class="approval-meta">
+                    Remark: {{ row.remarks or 'No remark added yet' }}
+                </div>
+                <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                    <form action="{{ url_for('teacher.approve_attendance', attendance_id=row.id) }}" method="POST" style="margin:0;">
+                        <button type="submit" class="btn btn-primary">Approve</button>
+                    </form>
+                    <form action="{{ url_for('teacher.reject_attendance', attendance_id=row.id) }}" method="POST" style="margin:0;">
+                        <button type="submit" class="btn btn-soft" style="border-radius:999px;">Reject</button>
+                    </form>
+                </div>
+            </div>
+            {% else %}
+            <div class="mini-note">No pending attendance submissions right now.</div>
+            {% endfor %}
+        </div>
+
+        <div class="panel-head" style="margin-top:18px;">
+            <div>
+                <h2>Approved Attendance Report</h2>
+                <p class="subtle">Records already approved for this subject.</p>
+            </div>
+            <span class="pill pill-accent">{{ recent_approved_rows|length }} shown</span>
+        </div>
+
+        <div class="table-wrap">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Student</th>
+                        <th>Subject</th>
+                        <th>Status</th>
+                        <th>Approval</th>
+                        <th>Remark</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in recent_approved_rows %}
+                    <tr>
+                        <td>{{ row.date.strftime('%d %b %Y') if row.date else '-' }}</td>
+                        <td>{{ row.student_name or 'Unknown' }}</td>
+                        <td>{{ row.subject }}</td>
+                        <td><span class="badge {{ 'badge-present' if row.status == 'Present' else 'badge-absent' }}">{{ row.status }}</span></td>
+                        <td><span class="badge badge-approved">{{ row.approval_status or 'Approved' }}</span></td>
+                        <td>{{ row.remarks or 'N/A' }}</td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="6" class="muted" style="padding:16px 8px;">No approved attendance records yet.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+    {% elif active_view == 'students' %}
+    <section class="panel">
+        <div class="panel-head">
+            <div>
+                <h2>Student Insights</h2>
+                <p class="subtle">See who needs help first and how the class is trending.</p>
+            </div>
+            <span class="pill pill-danger">{{ at_risk_students|length }} at risk</span>
+        </div>
+
+        <div class="chart-grid">
+            <div class="chart-card">
+                <h2>At-Risk Students</h2>
+                <p class="subtle">The three students with the lowest attendance rate among approved logs.</p>
+                <div class="stack">
+                    {% for item in at_risk_students[:3] %}
+                    <div class="risk-item">
+                        <div style="display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap;">
+                            <strong style="color:white;">{{ item.student.name }}</strong>
+                            <span class="badge badge-absent">{{ item.attendance_rate }}%</span>
+                        </div>
+                        <div class="muted" style="margin-top:6px;">{{ item.pending_total }} pending, {{ item.approved_total }} approved logs</div>
+                        <div class="progress" style="margin-top:10px;">
+                            <div class="progress-bar" style="width: {{ item.attendance_rate if item.attendance_rate <= 100 else 100 }}%;"></div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="mini-note">No at-risk students yet. Nice work.</div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="chart-card">
+                <h2>Class Snapshot</h2>
+                <p class="subtle">A small table for the first few students in the subject.</p>
+                <div class="table-wrap">
+                    <table class="data-table" style="min-width: 0;">
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Attendance</th>
+                                <th>Pending</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in focus_students %}
+                            <tr>
+                                <td>{{ item.student.name }}</td>
+                                <td><span class="badge {{ 'badge-present' if item.attendance_rate >= 75 else 'badge-absent' }}">{{ item.attendance_rate }}%</span></td>
+                                <td>{{ item.pending_total }}</td>
+                            </tr>
+                            {% else %}
+                            <tr><td colspan="3" class="muted">No student data available yet.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+    {% elif active_view == 'homework' %}
+    <section class="panel">
+        <div class="panel-head">
+            <div>
+                <h2>Homework Center</h2>
+                <p class="subtle">Create homework, edit it later, or remove it when the class changes direction.</p>
+            </div>
+            <span class="pill pill-accent">{{ total_homeworks }} items</span>
+        </div>
+
+        <form action="{{ url_for('teacher.create_homework') }}" method="POST" class="stack" style="margin-bottom:18px;">
+            <input type="text" class="field" value="{{ current_subject }}" disabled>
+            <input type="text" name="title" class="field" placeholder="Homework title" required>
+            <input type="date" name="due_date" class="field">
+            <textarea name="description" class="textarea" placeholder="Homework instructions"></textarea>
+            <button type="submit" class="btn btn-primary" style="border-radius:12px; width: fit-content;">Create Homework</button>
+        </form>
+
+        <div class="stack">
+            {% for item in homework_items %}
+            <div class="approval-card">
+                <div class="approval-top">
+                    <div>
+                        <strong style="color:white;">{{ item.title }}</strong>
+                        <div class="approval-meta">{{ item.subject }} | Due {{ item.due_date.strftime('%d %b %Y') if item.due_date else 'No due date' }}</div>
+                    </div>
+                    <span class="badge badge-approved">Homework</span>
+                </div>
+                <form action="{{ url_for('teacher.update_homework', homework_id=item.id) }}" method="POST" class="stack">
+                    <input type="text" class="field" value="{{ item.subject }}" disabled>
+                    <input type="text" name="title" class="field" value="{{ item.title }}" required>
+                    <input type="date" name="due_date" class="field" value="{{ item.due_date.isoformat() if item.due_date else '' }}">
+                    <textarea name="description" class="textarea">{{ item.description or '' }}</textarea>
+                    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                        <button type="submit" class="btn btn-primary" style="border-radius:12px;">Update</button>
+                    </div>
+                </form>
+                <form action="{{ url_for('teacher.delete_homework', homework_id=item.id) }}" method="POST" style="margin:0;">
+                    <button type="submit" class="btn btn-soft" onclick="return confirm('Delete this homework item?');">Delete</button>
+                </form>
+            </div>
+            {% else %}
+            <div class="mini-note">No homework items created yet.</div>
+            {% endfor %}
+        </div>
+    </section>
+    {% elif active_view == 'notes' %}
+    <section class="panel">
+        <div class="panel-head">
+            <div>
+                <h2>Teacher Notes</h2>
+                <p class="subtle">Send notes and attachments to the class group in a polished, focused view.</p>
+            </div>
+            <span class="pill pill-accent">{{ total_teacher_notes }} notes</span>
+        </div>
+
+        <form action="{{ url_for('teacher.create_teacher_note') }}" method="POST" enctype="multipart/form-data" class="stack" style="margin-bottom:18px;">
+            <input type="text" name="title" class="field" placeholder="Note title" required>
+            <textarea name="content" class="textarea" placeholder="Write the note for students" required></textarea>
+            <input type="file" name="attachment" class="field" accept=".pdf,.doc,.docx,.ppt,.pptx,.png,.jpg,.jpeg,.webp,.txt">
+            <button type="submit" class="btn btn-primary" style="border-radius:12px; width: fit-content;">Send Note</button>
+        </form>
+
+        <div class="stack">
+            {% for note in teacher_notes %}
+            <div class="approval-card">
+                <div class="approval-top">
+                    <div>
+                        <strong style="color:white;">{{ note.title }}</strong>
+                        <div class="approval-meta">{{ note.subject }} | {{ note.created_at.strftime('%d %b %Y') if note.created_at else '-' }}</div>
+                    </div>
+                    <span class="badge badge-approved">Sent</span>
+                </div>
+                {% if note.content %}
+                <div class="approval-meta" style="color:#cbd5e1; line-height:1.5;">
+                    {{ note.content[:180] }}{% if note.content|length > 180 %}...{% endif %}
+                </div>
+                {% endif %}
+                {% if note.attachment_path %}
+                <a href="{{ url_for('static', filename=note.attachment_path) }}" target="_blank" style="color:#7dd3fc; text-decoration:none; font-weight:700;">Open attached file</a>
+                {% endif %}
+            </div>
+            {% else %}
+            <div class="mini-note">No teacher notes sent yet.</div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% if active_view == 'overview' %}
+<script>
+    const approvalLabels = {{ chart_labels|tojson }};
+    const approvalValues = {{ chart_values|tojson }};
+    const presenceLabels = {{ presence_labels|tojson }};
+    const presenceValues = {{ presence_values|tojson }};
+
+    function createDoughnutChart(canvasId, labels, values, colors) {
+        const canvas = document.getElementById(canvasId);
+        if (!canvas) return;
+
+        new Chart(canvas, {
+            type: 'doughnut',
+            data: {
+                labels,
+                datasets: [{
+                    data: values,
+                    backgroundColor: colors,
+                    borderWidth: 0,
+                    hoverOffset: 8,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '68%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            color: '#cbd5e1',
+                            usePointStyle: true,
+                            pointStyle: 'circle',
+                            padding: 18,
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                        titleColor: '#fff',
+                        bodyColor: '#e2e8f0',
+                        borderColor: 'rgba(148, 163, 184, 0.18)',
+                        borderWidth: 1,
+                    }
+                }
+            }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        createDoughnutChart('approvalChart', approvalLabels, approvalValues, ['#22d3ee', '#f59e0b', '#ef4444']);
+        createDoughnutChart('presenceChart', presenceLabels, presenceValues, ['#10b981', '#ef4444']);
+    });
+</script>
+{% endif %}
+{% endblock %}

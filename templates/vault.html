@@ -1,0 +1,279 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+    /* Professional Layout */
+    .vault-container {
+        padding: 30px;
+        animation: fadeIn 0.8s ease-out;
+    }
+
+    /* Modern Terminal Header */
+    .terminal-header {
+        background: rgba(0, 242, 255, 0.05);
+        border: 1px solid rgba(0, 242, 255, 0.2);
+        padding: 15px 25px;
+        border-radius: 12px;
+        display: flex;
+        justify-content: space-between;
+        font-family: 'Courier New', monospace;
+        color: #00f2ff;
+        margin-bottom: 30px;
+        box-shadow: 0 0 15px rgba(0, 242, 255, 0.1);
+    }
+
+    /* Functional Search Bar */
+    .search-container {
+        margin-bottom: 25px;
+    }
+    .vault-search {
+        width: 100%;
+        background: rgba(15, 23, 42, 0.8);
+        border: 1px solid rgba(0, 242, 255, 0.3);
+        padding: 12px 20px;
+        border-radius: 10px;
+        color: #fff;
+        font-family: inherit;
+        outline: none;
+        transition: 0.3s;
+    }
+    .vault-search:focus {
+        border-color: #00f2ff;
+        box-shadow: 0 0 10px rgba(0, 242, 255, 0.2);
+    }
+
+    /* Upload Section */
+    .upload-section {
+        background: rgba(30, 41, 59, 0.5);
+        border: 2px dashed rgba(0, 242, 255, 0.3);
+        border-radius: 15px;
+        padding: 40px;
+        text-align: center;
+        margin-bottom: 40px;
+        transition: 0.3s;
+    }
+    .upload-section:hover {
+        border-color: #00f2ff;
+        background: rgba(0, 242, 255, 0.02);
+    }
+
+    .vault-select {
+        background: #0f172a;
+        color: #00f2ff;
+        border: 1px solid rgba(0, 242, 255, 0.4);
+        padding: 10px 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        cursor: pointer;
+    }
+
+    /* Grid & Cards */
+    .vault-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 25px;
+    }
+
+    .doc-card {
+        background: rgba(30, 41, 59, 0.4);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 16px;
+        padding: 25px;
+        text-align: center;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .doc-card:hover {
+        transform: translateY(-10px);
+        border-color: #00f2ff;
+        box-shadow: 0 10px 30px rgba(0, 242, 255, 0.15);
+    }
+
+    .doc-icon {
+        font-size: 3rem;
+        margin-bottom: 15px;
+        display: block;
+        filter: drop-shadow(0 0 10px rgba(0, 242, 255, 0.3));
+    }
+
+    /* Action Buttons */
+    .btn-group {
+        margin-top: 20px;
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+    }
+
+    .action-btn {
+        padding: 8px 15px;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 0.75rem;
+        cursor: pointer;
+        transition: 0.2s;
+        border: none;
+    }
+
+    .view-btn { background: #00f2ff; color: #000; }
+    .view-btn:hover { background: #fff; box-shadow: 0 0 10px #00f2ff; }
+
+    .delete-btn { background: rgba(255, 75, 43, 0.2); color: #ff4b2b; border: 1px solid #ff4b2b; }
+    .delete-btn:hover { background: #ff4b2b; color: #fff; }
+
+    .send-btn {
+        background: linear-gradient(135deg, #00f2ff, #7000ff);
+        color: white;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(0, 242, 255, 0.3);
+    }
+
+    /* File Viewer Modal */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 9999;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.9);
+        backdrop-filter: blur(8px);
+    }
+
+    .modal-content {
+        position: relative;
+        background: #0b0e14;
+        margin: 2% auto;
+        padding: 20px;
+        width: 85%;
+        height: 85vh;
+        border: 1px solid #00f2ff;
+        border-radius: 20px;
+    }
+
+    .close-modal {
+        position: absolute;
+        right: 20px;
+        top: 10px;
+        color: #ff4b2b;
+        font-size: 30px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+
+<div class="vault-container">
+    <div class="terminal-header">
+        <span>> ACADEMIC_VAULT_ENCRYPTED</span>
+        <span>USER: {{ current_user.email.split('@')[0].upper() }} | SYSTEM: SECURE</span>
+    </div>
+
+    <div class="search-container">
+        <input type="text" id="vaultSearch" class="vault-search" placeholder="Search by Document Type or Filename..." onkeyup="filterDocs()">
+    </div>
+
+    <div class="upload-section">
+        <form action="{{ url_for('ai.upload_doc') }}" method="POST" enctype="multipart/form-data">
+            <h3 style="color: #00f2ff; margin-bottom: 20px;">NEW DATA UPLOAD</h3>
+            <select name="doc_type" class="vault-select">
+                <option value="10th Marksheet">10th Marksheet</option>
+                <option value="12th Marksheet">12th Marksheet</option>
+                <option value="Degree Certificate">Degree / Diploma</option>
+                <option value="Internship Letter">Internship Letter</option>
+                <option value="Other Certificate">Other Certificate</option>
+            </select>
+            <br>
+            <input type="file" name="certificate" id="file-upload" style="display: none;" onchange="this.form.submit()">
+            <button type="button" class="send-btn" onclick="document.getElementById('file-upload').click()">
+                SELECT FILE
+            </button>
+            <p style="font-size: 0.8rem; color: #64748b; margin-top: 15px;">Supported: PDF, PNG, JPG (Max 5MB)</p>
+        </form>
+    </div>
+
+    <div class="vault-grid" id="vaultGrid">
+        {% if documents %}
+            {% for doc in documents %}
+            <div class="doc-card" data-title="{{ doc.doc_type.lower() }} {{ doc.file_name.lower() }}">
+                <span class="doc-icon">
+                    {% if 'pdf' in doc.file_name.lower() %}📄{% else %}📜{% endif %}
+                </span>
+                <div class="doc-title" style="color:#00f2ff;">{{ doc.doc_type }}</div>
+                <div class="doc-meta">
+                    {{ doc.file_name.split('_')[-1] }}<br>
+                    <span style="font-size: 0.75rem; color: #475569;">Saved: {{ doc.upload_date }}</span>
+                </div>
+
+                <div class="btn-group">
+                    <button class="action-btn view-btn" onclick="openViewer('{{ url_for('ai.view_file', doc_id=doc.id) }}')">VIEW</button>
+                    <form action="{{ url_for('ai.delete_doc', doc_id=doc.id) }}" method="POST" onsubmit="return confirm('Confirm data deletion?')">
+                        <button type="submit" class="action-btn delete-btn">DELETE</button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div style="grid-column: 1/-1; text-align: center; padding: 60px; color: #64748b;">
+                <p>> VAULT_EMPTY: No academic records detected.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<div id="fileViewer" class="modal">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeViewer()">&times;</span>
+        <h4 id="modalTitle" style="color: #00f2ff; margin-bottom: 15px; font-family: 'Courier New';">SYSTEM_VIEWER_INIT...</h4>
+        <iframe id="viewFrame" src="" width="100%" height="90%" style="border: 1px solid rgba(0, 242, 255, 0.2); border-radius: 10px;"></iframe>
+    </div>
+</div>
+
+<script>
+    // Live Search Functionality
+    function filterDocs() {
+        let input = document.getElementById('vaultSearch').value.toLowerCase();
+        let cards = document.getElementsByClassName('doc-card');
+        
+        for (let i = 0; i < cards.length; i++) {
+            let data = cards[i].getAttribute('data-title');
+            if (data.includes(input)) {
+                cards[i].style.display = "";
+            } else {
+                cards[i].style.display = "none";
+            }
+        }
+    }
+
+    // Modal Control
+    function openViewer(url) {
+        const modal = document.getElementById('fileViewer');
+        const frame = document.getElementById('viewFrame');
+        frame.src = url;
+        modal.style.display = "block";
+    }
+
+    function closeViewer() {
+        const modal = document.getElementById('fileViewer');
+        const frame = document.getElementById('viewFrame');
+        modal.style.display = "none";
+        frame.src = ""; // Clear source to stop background loading
+    }
+
+    // Close modal if clicking outside the content
+    window.onclick = function(event) {
+        const modal = document.getElementById('fileViewer');
+        if (event.target == modal) {
+            closeViewer();
+        }
+    }
+</script>
+{% endblock %}

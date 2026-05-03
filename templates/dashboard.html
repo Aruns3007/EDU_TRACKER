@@ -1,0 +1,462 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .dash-page {
+        flex: 1;
+        padding: 32px;
+        overflow-y: auto;
+        background:
+            radial-gradient(circle at top left, rgba(0, 242, 255, 0.08), transparent 24%),
+            radial-gradient(circle at bottom right, rgba(139, 92, 246, 0.10), transparent 26%),
+            #0b0f1a;
+        color: white;
+    }
+
+    .dash-shell {
+        display: grid;
+        grid-template-columns: 340px minmax(0, 1fr);
+        gap: 24px;
+        align-items: start;
+    }
+
+    .dash-stack {
+        display: grid;
+        gap: 24px;
+    }
+
+    .profile-panel {
+        position: sticky;
+        top: 24px;
+        align-self: start;
+        display: grid;
+        gap: 18px;
+    }
+
+    .profile-hero {
+        display: grid;
+        gap: 16px;
+        padding: 24px;
+        border-radius: 24px;
+        background: linear-gradient(180deg, rgba(30, 41, 59, 0.92), rgba(15, 23, 42, 0.92));
+        border: 1px solid rgba(0, 242, 255, 0.14);
+        box-shadow: 0 20px 48px rgba(0, 0, 0, 0.24);
+    }
+
+    .profile-avatar {
+        width: 120px;
+        height: 120px;
+        border-radius: 28px;
+        overflow: hidden;
+        border: 2px solid rgba(0, 242, 255, 0.22);
+        background: linear-gradient(135deg, rgba(0, 242, 255, 0.12), rgba(56, 189, 248, 0.04));
+        display: grid;
+        place-items: center;
+        font-size: 2rem;
+        font-weight: 700;
+        color: #00f2ff;
+        text-transform: uppercase;
+    }
+
+    .profile-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    .profile-name {
+        margin: 0;
+        font-size: 1.4rem;
+        line-height: 1.2;
+    }
+
+    .profile-subtext {
+        margin: 0;
+        color: #94a3b8;
+        font-size: 0.9rem;
+    }
+
+    .profile-meta {
+        display: grid;
+        gap: 10px;
+        padding-top: 4px;
+    }
+
+    .profile-meta-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        font-size: 0.88rem;
+        color: #cbd5e1;
+    }
+
+    .profile-meta-row span:first-child {
+        color: #94a3b8;
+    }
+
+    .profile-form {
+        display: grid;
+        gap: 12px;
+        padding: 22px;
+        border-radius: 24px;
+        background: rgba(30, 41, 59, 0.5);
+        border: 1px solid rgba(148, 163, 184, 0.14);
+    }
+
+    .profile-form label {
+        display: grid;
+        gap: 6px;
+        color: #cbd5e1;
+        font-size: 0.84rem;
+    }
+
+    .profile-form input,
+    .profile-form textarea {
+        width: 100%;
+        box-sizing: border-box;
+        border-radius: 14px;
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        background: rgba(15, 23, 42, 0.72);
+        color: white;
+        padding: 12px 14px;
+        outline: none;
+    }
+
+    .profile-form input:focus,
+    .profile-form textarea:focus {
+        border-color: rgba(0, 242, 255, 0.36);
+        box-shadow: 0 0 0 4px rgba(0, 242, 255, 0.08);
+    }
+
+    .profile-form textarea {
+        min-height: 88px;
+        resize: vertical;
+    }
+
+    .file-hint {
+        font-size: 0.78rem;
+        color: #94a3b8;
+    }
+
+    .submit-profile {
+        width: 100%;
+        padding: 13px 18px;
+        border-radius: 14px;
+        background: linear-gradient(135deg, #00f2ff, #10b981);
+        color: #07111f;
+        font-weight: 800;
+        border: 0;
+        cursor: pointer;
+    }
+
+    .hero-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 4px;
+    }
+
+    .hero-header h1 {
+        margin: 0;
+        text-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
+    }
+
+    .hero-header p {
+        color: #94a3b8;
+        margin-top: 5px;
+        margin-bottom: 0;
+    }
+
+    .hero-pill {
+        padding: 10px 20px;
+        border-radius: 50px;
+        border: 1px solid rgba(0, 242, 255, 0.2);
+        background: rgba(0, 242, 255, 0.05);
+        white-space: nowrap;
+    }
+
+    .metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 25px;
+    }
+
+    .soft-card {
+        padding: 25px;
+        border-radius: 20px;
+        background: rgba(30, 41, 59, 0.5);
+    }
+
+    .right-grid {
+        display: grid;
+        gap: 25px;
+    }
+
+    .two-col {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 25px;
+    }
+
+    .section-title {
+        color: #00f2ff;
+        margin-bottom: 20px;
+    }
+
+    @media (max-width: 1100px) {
+        .dash-shell {
+            grid-template-columns: 1fr;
+        }
+
+        .profile-panel {
+            position: static;
+        }
+    }
+
+    @media (max-width: 900px) {
+        .metrics-grid,
+        .two-col {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 640px) {
+        .dash-page {
+            padding: 16px;
+        }
+
+        .hero-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
+</style>
+
+<main class="dash-page">
+    <div class="hero-header">
+        <div>
+            <h1>Student Dashboard</h1>
+            <p>Welcome back, {{ current_user.username }} | <span style="color: #00f2ff;">{{ today }}</span></p>
+        </div>
+        <div class="hero-pill">
+            <span style="color: #00f2ff">LIVE</span> AI Engine Online
+        </div>
+    </div>
+
+    <div class="dash-shell">
+        <aside class="profile-panel">
+            <section class="profile-hero">
+                <div class="profile-avatar">
+                    {% if current_user.profile_image %}
+                        <img src="{{ url_for('static', filename=current_user.profile_image) }}" alt="{{ current_user.username }} profile photo">
+                    {% else %}
+                        {{ (current_user.name or current_user.email or 'S')[:1] }}
+                    {% endif %}
+                </div>
+                <div>
+                    <h2 class="profile-name">{{ current_user.name or 'Student Profile' }}</h2>
+                    <p class="profile-subtext">{{ current_user.student_id or 'No student ID yet' }}</p>
+                </div>
+                <div class="profile-meta">
+                    <div class="profile-meta-row"><span>Email</span><span>{{ current_user.email }}</span></div>
+                    <div class="profile-meta-row"><span>Contact</span><span>{{ current_user.phone_number or 'Add number' }}</span></div>
+                    <div class="profile-meta-row"><span>Parent</span><span>{{ current_user.parent_name or 'Add parent details' }}</span></div>
+                    <div class="profile-meta-row"><span>Parent Phone</span><span>{{ current_user.parent_phone or 'Add number' }}</span></div>
+                </div>
+            </section>
+
+            <form class="profile-form" method="POST" enctype="multipart/form-data">
+                <label>
+                    Student Image
+                    <input type="file" name="profile_image" accept="image/*">
+                    <span class="file-hint">Upload a profile photo to show in the dashboard.</span>
+                </label>
+                <label>
+                    Student Name
+                    <input type="text" name="name" value="{{ current_user.name or '' }}" placeholder="Your full name">
+                </label>
+                <label>
+                    Student Email
+                    <input type="email" name="email" value="{{ current_user.email or '' }}" required>
+                </label>
+                <label>
+                    Contact Number
+                    <input type="text" name="phone_number" value="{{ current_user.phone_number or '' }}" placeholder="Your mobile number">
+                </label>
+                <label>
+                    Parent Name
+                    <input type="text" name="parent_name" value="{{ current_user.parent_name or '' }}" placeholder="Parent or guardian name">
+                </label>
+                <label>
+                    Parent Contact
+                    <input type="text" name="parent_phone" value="{{ current_user.parent_phone or '' }}" placeholder="Parent mobile number">
+                </label>
+                <label>
+                    Parent Email
+                    <input type="email" name="parent_email" value="{{ current_user.parent_email or '' }}" placeholder="Parent email address">
+                </label>
+                <label>
+                    Address / Details
+                    <textarea name="address" placeholder="Home address, class, or any extra profile details">{{ current_user.address or '' }}</textarea>
+                </label>
+                <button class="submit-profile" type="submit">Save Profile</button>
+            </form>
+        </aside>
+
+        <section class="right-grid">
+            <div class="metrics-grid">
+                <div class="card glass-effect soft-card" style="text-align: center;">
+                    <h3 style="margin-bottom: 20px; color: #00f2ff;">Eligibility Ring</h3>
+                    <div style="position: relative; width: 160px; height: 160px; margin: 0 auto;">
+                        <canvas id="attendanceGauge"></canvas>
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+                            <h2 style="margin: 0; font-size: 1.8rem;">{{ attendance }}%</h2>
+                        </div>
+                    </div>
+                    <p style="margin-top: 20px; color: #94a3b8; font-size: 0.9rem;">
+                        Bunk Manager: <span style="color: #00f2ff; font-weight: bold;">{{ safe_bunks }}</span> safe misses left.
+                    </p>
+                </div>
+
+                <div class="card glass-effect soft-card" style="text-align: center;">
+                    <h3 style="margin-bottom: 20px; color: #fbbf24;">Exam Readiness</h3>
+                    <div style="position: relative; width: 160px; height: 160px; margin: 0 auto;">
+                        <canvas id="readinessGauge"></canvas>
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+                            <h2 style="margin: 0; font-size: 1.5rem; color: {{ readiness_color }}">{{ readiness }}</h2>
+                        </div>
+                    </div>
+                    <p style="margin-top: 20px; color: #94a3b8; font-size: 0.9rem;">AI Prediction based on study consistency.</p>
+                </div>
+
+                <div class="card glass-effect soft-card" style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                    <p style="color: #94a3b8; font-size: 0.8rem; letter-spacing: 1px;">NOTES VAULT</p>
+                    <h1 style="font-size: 3.5rem; margin: 10px 0; color: #fff;">{{ notes_count }}</h1>
+                    <a href="{{ url_for('learning.hub') }}" style="color: #00f2ff; text-decoration: none; font-size: 0.9rem;">View All Files -></a>
+                </div>
+            </div>
+
+            <div class="card glass-effect soft-card" style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                <p style="color: #94a3b8; font-size: 0.8rem; letter-spacing: 1px;">PENDING APPROVALS</p>
+                <h1 style="font-size: 3.5rem; margin: 10px 0; color: #fbbf24;">{{ pending_logs|default(0) }}</h1>
+                <span style="color: #94a3b8; font-size: 0.9rem;">Teacher must approve this first</span>
+            </div>
+
+            <div class="card glass-effect soft-card">
+                <h3 class="section-title">Upcoming Homework</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px;">
+                    {% for item in homework_items %}
+                    <div style="background: rgba(15, 23, 42, 0.6); padding: 15px; border-radius: 12px; border-left: 3px solid #fbbf24; position: relative;">
+                        <span style="position: absolute; top: 15px; right: 15px; font-size: 0.7rem; color: #fbbf24; background: rgba(251, 191, 36, 0.1); padding: 2px 8px; border-radius: 10px; border: 1px solid rgba(251, 191, 36, 0.2);">{{ item.subject }}</span>
+                        <h4 style="margin: 0 0 10px 0; padding-right: 60px;">{{ item.title }}</h4>
+                        <p style="margin: 0 0 15px 0; color: #94a3b8; font-size: 0.85rem; line-height: 1.4;">{{ item.description or 'No additional instructions provided.' }}</p>
+                        <div style="display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: #00f2ff;">
+                            <span>Due: {{ item.due_date.strftime('%Y-%m-%d') if item.due_date else 'No Deadline' }}</span>
+                        </div>
+                    </div>
+                    {% else %}
+                    <p style="color: #64748b; font-style: italic; width: 100%;">No homework assigned yet. You're all caught up!</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="card glass-effect soft-card">
+                <h3 class="section-title">Teacher Notes ({{ teacher_notes_count|default(0) }})</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px;">
+                    {% for note in teacher_notes %}
+                    <div style="background: rgba(15, 23, 42, 0.6); padding: 15px; border-radius: 12px; border-left: 3px solid #38bdf8;">
+                        <span style="display: inline-block; margin-bottom: 10px; font-size: 0.7rem; color: #38bdf8; background: rgba(56, 189, 248, 0.1); padding: 2px 8px; border-radius: 10px; border: 1px solid rgba(56, 189, 248, 0.2);">
+                            {{ note.subject }}
+                        </span>
+                        <h4 style="margin: 0 0 10px 0;">{{ note.title }}</h4>
+                        {% if note.content %}
+                        <p style="margin: 0 0 12px 0; color: #94a3b8; font-size: 0.85rem; line-height: 1.5;">{{ note.content[:180] }}{% if note.content|length > 180 %}...{% endif %}</p>
+                        {% endif %}
+                        {% if note.attachment_path %}
+                        <a href="{{ url_for('static', filename=note.attachment_path) }}" target="_blank" style="display:inline-block; margin-bottom:12px; color:#7dd3fc; text-decoration:none; font-weight:700;">Open attached file</a>
+                        {% endif %}
+                        <div style="display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: #00f2ff;">
+                            <span>Sent by {{ note.teacher.name if note.teacher else 'Teacher' }}</span>
+                            <span>|</span>
+                            <span>{{ note.created_at.strftime('%Y-%m-%d') if note.created_at else 'No date' }}</span>
+                        </div>
+                    </div>
+                    {% else %}
+                    <p style="color: #64748b; font-style: italic; width: 100%;">No teacher notes yet. Check back after your teacher posts one.</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="two-col">
+                <div class="glass-effect soft-card">
+                    <h3 class="section-title">Today's Schedule</h3>
+                    {% for item in schedule %}
+                    <div style="display: flex; align-items: center; background: rgba(15, 23, 42, 0.6); padding: 15px; border-radius: 12px; margin-bottom: 10px; border-left: 3px solid #00f2ff;">
+                        <div style="flex: 1;">
+                            <h4 style="margin: 0;">{{ item.subject }}</h4>
+                            <p style="margin: 5px 0 0 0; color: #94a3b8; font-size: 0.8rem;">{{ item.start_time }} - {{ item.end_time }}</p>
+                        </div>
+                    </div>
+                    {% else %}
+                    <p style="color: #64748b; font-style: italic;">No classes scheduled for today.</p>
+                    {% endfor %}
+                </div>
+
+                <div class="glass-effect soft-card">
+                    <h3 style="margin-bottom: 15px;">Quick Log</h3>
+                    <p style="margin-top: -5px; margin-bottom: 15px; color: #94a3b8; font-size: 0.85rem;">Attendance stays pending until the teacher approves it.</p>
+                    <form action="{{ url_for('att.mark_attendance') }}" method="POST">
+                        <select name="subject" required style="width: 100%; padding: 10px; border-radius: 8px; background: #0f172a; color: white; border: 1px solid #334155; margin-bottom: 15px;">
+                            {% for sub in subjects %}
+                                <option value="{{ sub }}">{{ sub }}</option>
+                            {% endfor %}
+                        </select>
+                        <div style="display: flex; gap: 10px;">
+                            <button type="submit" name="status" value="Present" style="flex: 1; background: #10b981; color: white; padding: 10px; border: none; border-radius: 8px; cursor: pointer;">P</button>
+                            <button type="submit" name="status" value="Absent" style="flex: 1; background: #ef4444; color: white; padding: 10px; border: none; border-radius: 8px; cursor: pointer;">A</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const attendanceVal = {{ attendance|default(0) }};
+    const readinessLabel = "{{ readiness|default('Low') }}";
+    const readinessVal = readinessLabel === "High" ? 90 : (readinessLabel === "Medium" ? 60 : 30);
+    const readinessColor = "{{ readiness_color|default('#ef4444') }}";
+
+    function createGauge(id, value, color) {
+        const ctx = document.getElementById(id).getContext('2d');
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                datasets: [{
+                    data: [value, 100 - value],
+                    backgroundColor: [color, 'rgba(255, 255, 255, 0.05)'],
+                    borderWidth: 0,
+                    circumference: 270,
+                    rotation: 225,
+                    cutout: '85%',
+                    borderRadius: 10
+                }]
+            },
+            options: {
+                plugins: { tooltip: { enabled: false }, legend: { display: false } },
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        createGauge('attendanceGauge', attendanceVal, '#00f2ff');
+        createGauge('readinessGauge', readinessVal, readinessColor);
+    });
+</script>
+{% endblock %}

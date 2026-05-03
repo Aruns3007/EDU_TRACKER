@@ -1,0 +1,13 @@
+instance/
+__pycache__/
+*.pyc
+.env
+venv/
+.venv/
+uploads/*
+!uploads/.gitkeep
+static/uploads/*
+!static/uploads/.gitkeep
+vault/*
+!vault/.gitkeep
+.vscode/

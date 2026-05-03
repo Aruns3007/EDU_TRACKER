@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% block body_class %}auth-page student-page{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='auth.css') }}">
+{% endblock %}
+{% block content %}
+<div class="auth-shell">
+    <div class="auth-grid">
+        <section class="auth-visual">
+            <div class="doodle-grid"></div>
+            <div class="doodle-squiggle squiggle-one"></div>
+            <div class="doodle-squiggle squiggle-two"></div>
+            <div class="doodle-squiggle squiggle-three"></div>
+
+            <div class="auth-copy">
+                <span class="auth-eyebrow">New student</span>
+                <h1>Create your study identity.</h1>
+                <p>
+                    Set up your EduTrack account to keep attendance, notes, timetable reminders, and AI study support in one place.
+                </p>
+
+                <div class="feature-row">
+                    <span class="feature-chip">Personal vault</span>
+                    <span class="feature-chip">Class timetable</span>
+                    <span class="feature-chip">Homework support</span>
+                    <span class="feature-chip">Study visuals</span>
+                </div>
+            </div>
+
+            <div class="auth-avatar-stage">
+                <div class="avatar-card">
+                    <svg class="avatar-svg" viewBox="0 0 420 420" role="img" aria-label="Friendly student avatar with notebook">
+                        <defs>
+                            <linearGradient id="regHead" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#38bdf8"/>
+                                <stop offset="100%" stop-color="#2dd4bf"/>
+                            </linearGradient>
+                            <linearGradient id="regBook" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#f97316"/>
+                                <stop offset="100%" stop-color="#f59e0b"/>
+                            </linearGradient>
+                        </defs>
+                        <rect x="54" y="56" width="312" height="308" rx="46" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.12)"/>
+                        <circle cx="210" cy="158" r="78" fill="url(#regHead)"/>
+                        <circle cx="184" cy="148" r="14" fill="#04111d"/>
+                        <circle cx="236" cy="148" r="14" fill="#04111d"/>
+                        <path d="M182 184 C196 202, 224 202, 238 184" fill="none" stroke="#04111d" stroke-width="10" stroke-linecap="round"/>
+                        <rect x="146" y="236" width="128" height="94" rx="26" fill="#1d4ed8"/>
+                        <rect x="92" y="255" width="54" height="72" rx="18" fill="url(#regBook)"/>
+                        <rect x="274" y="255" width="54" height="72" rx="18" fill="#8b5cf6"/>
+                        <path d="M110 278 H128" stroke="#04111d" stroke-width="6" stroke-linecap="round"/>
+                        <path d="M292 278 H310" stroke="#04111d" stroke-width="6" stroke-linecap="round"/>
+                        <rect x="154" y="350" width="112" height="14" rx="7" fill="#cbd5e1"/>
+                        <circle cx="82" cy="126" r="10" fill="#f59e0b"/>
+                        <circle cx="336" cy="126" r="10" fill="#2dd4bf"/>
+                        <circle cx="82" cy="304" r="11" fill="#8b5cf6"/>
+                        <circle cx="338" cy="304" r="11" fill="#38bdf8"/>
+                    </svg>
+                    <div class="avatar-caption">Build your learner profile</div>
+                    <div class="avatar-note">A clean account keeps your classes, study tools, and uploads connected.</div>
+                </div>
+
+                <div class="scene-card">
+                    <div class="scene-panel">
+                        <div class="scene-label">Why sign up?</div>
+                        <div class="scene-text">
+                            You get a personal learning space with the assistant ready to answer, explain, and guide you through visual learning.
+                        </div>
+                    </div>
+                    <div class="scene-metrics">
+                        <div class="mini-metric">
+                            <strong>Organized notes</strong>
+                            <span>Keep your files and study resources tidy.</span>
+                        </div>
+                        <div class="mini-metric">
+                            <strong>Smart help</strong>
+                            <span>Ask questions in plain language anytime.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="auth-card">
+            <h2>Student Registration</h2>
+            <p>Join EduTrack and start studying with AI support.</p>
+
+            <form class="auth-form" method="POST" action="{{ url_for('auth.register') }}">
+                <div class="auth-field">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" name="name" required placeholder="Enter full name">
+                </div>
+
+                <div class="auth-field">
+                    <label for="email">Institutional Email</label>
+                    <input type="email" id="email" name="email" required placeholder="student@university.edu">
+                </div>
+
+                <div class="auth-field">
+                    <label for="password">Access Key</label>
+                    <input type="password" id="password" name="password" required placeholder="Create strong password">
+                </div>
+
+                <button type="submit" class="auth-submit">Create My Account</button>
+            </form>
+
+            <div class="auth-links">
+                <span>Already registered? <a href="{{ url_for('auth.login') }}">Login</a></span>
+                <span>Teacher? <a href="{{ url_for('teacher.teacher_signup') }}">Teacher signup</a></span>
+            </div>
+
+            <div class="auth-footnote">
+                After signup, you can use the assistant for images, screenshots, topic videos, and friendly explanations.
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock %}

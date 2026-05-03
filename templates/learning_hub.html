@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block content %}
+<main style="flex:1; padding: 40px; overflow-y: auto; background: #0b0f1a; color: white; font-family: 'Segoe UI', sans-serif;">
+    
+    <div style="margin-bottom: 40px;">
+        <h1 style="margin: 0; text-shadow: 0 0 10px rgba(0, 242, 255, 0.5); color: #00f2ff;">Notes Vault</h1>
+        <p style="color: #94a3b8; margin-top: 5px;">Manage and access your study materials securely.</p>
+    </div>
+
+    <div class="card glass-effect" style="margin-bottom: 30px; padding: 25px; border-radius: 20px; background: rgba(30, 41, 59, 0.5); border: 1px solid rgba(0, 242, 255, 0.1);">
+        <h3 style="margin-bottom: 20px; color: #00f2ff; font-size: 1.1rem;">📤 Upload New Note</h3>
+        <form action="{{ url_for('learning.upload_note') }}" method="POST" enctype="multipart/form-data" style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+            <input type="text" name="subject" placeholder="Subject (e.g. Python)" required 
+                   style="flex: 1; min-width: 200px; padding: 12px; border-radius: 10px; background: rgba(0,0,0,0.3); border: 1px solid #334155; color: white; outline: none;">
+            
+            <div style="background: rgba(0,0,0,0.2); padding: 8px 15px; border-radius: 10px; border: 1px dashed rgba(148, 163, 184, 0.3);">
+                <input type="file" name="file" required style="color: #94a3b8; font-size: 0.9rem; cursor: pointer;">
+            </div>
+            
+            <button type="submit" style="background: #00f2ff; color: #0b0f1a; border: none; padding: 12px 25px; border-radius: 10px; cursor: pointer; font-weight: 700;">
+                Upload Note
+            </button>
+        </form>
+    </div>
+
+    <div class="card glass-effect" style="padding: 25px; border-radius: 20px; background: rgba(30, 41, 59, 0.5); border: 1px solid rgba(255,255,255,0.05);">
+        <h3 style="margin-bottom: 20px; color: #fff;">📚 Your Resources</h3>
+        <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                <thead>
+                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.1); color: #94a3b8; font-size: 0.8rem; letter-spacing: 1px;">
+                        <th style="padding: 15px;">FILE NAME</th>
+                        <th style="padding: 15px;">SUBJECT</th>
+                        <th style="padding: 15px; text-align: center;">ACTIONS</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for note in notes %}
+                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                        <td style="padding: 15px; color: #e2e8f0;">{{ note.title }}</td>
+                        <td style="padding: 15px;">
+                            <span style="background: rgba(0, 242, 255, 0.1); color: #00f2ff; padding: 5px 12px; border-radius: 6px; font-size: 0.75rem; border: 1px solid rgba(0, 242, 255, 0.2);">
+                                {{ note.subject }}
+                            </span>
+                        </td>
+                        <td style="padding: 15px;">
+                            <div style="display: flex; gap: 12px; justify-content: center; align-items: center;">
+                                <a href="{{ url_for('learning.view_note', filename=note.file_path) }}" target="_blank" 
+                                   style="color: #00f2ff; text-decoration: none; font-size: 0.85rem; border: 1px solid rgba(0, 242, 255, 0.3); padding: 5px 12px; border-radius: 6px;">
+                                   View
+                                </a>
+
+                                <a href="{{ url_for('learning.download_file', filename=note.file_path) }}" 
+                                   style="color: #10b981; text-decoration: none; font-size: 0.85rem; border: 1px solid rgba(16, 185, 129, 0.3); padding: 5px 12px; border-radius: 6px;">
+                                   Download
+                                </a>
+                                
+                                <form action="{{ url_for('learning.delete_note', note_id=note.id) }}" method="POST" onsubmit="return confirm('Delete?');" style="margin: 0;">
+                                    <button type="submit" style="background: transparent; border: 1px solid rgba(239, 68, 68, 0.3); color: #ef4444; cursor: pointer; font-size: 0.85rem; padding: 5px 12px; border-radius: 6px;">
+                                        Delete
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="3" style="padding: 60px; text-align: center; color: #64748b;">No notes found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+{% endblock %}

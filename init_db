@@ -1,0 +1,8 @@
+CREATE TABLE IF NOT EXISTS timetable (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    day TEXT NOT NULL,
+    subject TEXT NOT NULL,
+    time TEXT,
+    FOREIGN KEY (user_id) REFERENCES user (id)
+);

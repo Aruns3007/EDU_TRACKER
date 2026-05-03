@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block body_class %}auth-page teacher-page{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='auth.css') }}">
+{% endblock %}
+{% block content %}
+<div class="auth-shell">
+    <div class="auth-grid">
+        <section class="auth-visual">
+            <div class="doodle-grid"></div>
+            <div class="doodle-squiggle squiggle-one"></div>
+            <div class="doodle-squiggle squiggle-two"></div>
+            <div class="doodle-squiggle squiggle-three"></div>
+
+            <div class="auth-copy">
+                <span class="auth-eyebrow">Teacher access</span>
+                <h1>Manage your class with clarity.</h1>
+                <p>
+                    Sign in to view attendance, homework tools, and student records from a calm teacher panel built for daily use.
+                </p>
+
+                <div class="feature-row">
+                    <span class="feature-chip">Attendance</span>
+                    <span class="feature-chip">Homework</span>
+                    <span class="feature-chip">Reports</span>
+                    <span class="feature-chip">Class notes</span>
+                </div>
+            </div>
+
+            <div class="auth-avatar-stage">
+                <div class="avatar-card avatar-card--image">
+                    <img
+                        class="hero-image"
+                        src="{{ url_for('static', filename='images/teacher-login-hero.png') }}"
+                        alt="Teacher login hero illustration"
+                    >
+                    <div class="avatar-caption">Teacher control center</div>
+                    <div class="avatar-note">Keep the classroom running with a neat, reliable dashboard.</div>
+                </div>
+
+                <div class="scene-card">
+                    <div class="scene-panel">
+                        <div class="scene-label">Built for teachers</div>
+                        <div class="scene-text">
+                            Quick login, clean tools, and a visual theme that still feels professional enough for staff workflows.
+                        </div>
+                    </div>
+                    <div class="scene-metrics">
+                        <div class="mini-metric">
+                            <strong>Fast access</strong>
+                            <span>Jump into reports and attendance instantly.</span>
+                        </div>
+                        <div class="mini-metric">
+                            <strong>Clear view</strong>
+                            <span>Focus on teaching, not fighting the interface.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="auth-card">
+            <h2>Teacher Login</h2>
+            <p>Restricted access for attendance, homework, and reports.</p>
+
+            <form class="auth-form" method="POST" action="{{ url_for('teacher.teacher_login') }}">
+                <div class="auth-field">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required placeholder="Enter email">
+                </div>
+
+                <div class="auth-field">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required placeholder="Enter password">
+                </div>
+
+                <button type="submit" class="auth-submit">Enter Teacher Panel</button>
+            </form>
+
+            <div class="auth-links">
+                <span>New teacher? <a href="{{ url_for('teacher.teacher_signup') }}">Create account</a></span>
+                <span>Student? <a href="{{ url_for('auth.login') }}">Student login</a></span>
+            </div>
+
+            <div class="auth-footnote">
+                If you are signing in from a school device, use the browser you trust and keep your access code private.
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock %}

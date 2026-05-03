@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+{% block body_class %}auth-page teacher-page{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='auth.css') }}">
+{% endblock %}
+{% block content %}
+<div class="auth-shell">
+    <div class="auth-grid">
+        <section class="auth-visual">
+            <div class="doodle-grid"></div>
+            <div class="doodle-squiggle squiggle-one"></div>
+            <div class="doodle-squiggle squiggle-two"></div>
+            <div class="doodle-squiggle squiggle-three"></div>
+
+            <div class="auth-copy">
+                <span class="auth-eyebrow">Teacher onboarding</span>
+                <h1>Create a staff account.</h1>
+                <p>
+                    Set up your teaching workspace for attendance, assignments, and class updates with a clean, friendly interface.
+                </p>
+
+                <div class="feature-row">
+                    <span class="feature-chip">Teacher panel</span>
+                    <span class="feature-chip">Reports</span>
+                    <span class="feature-chip">Homework tools</span>
+                    <span class="feature-chip">Attendance</span>
+                </div>
+            </div>
+
+            <div class="auth-avatar-stage">
+                <div class="avatar-card">
+                    <svg class="avatar-svg" viewBox="0 0 420 420" role="img" aria-label="Teacher onboarding avatar">
+                        <defs>
+                            <linearGradient id="teachSignupHead" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#f59e0b"/>
+                                <stop offset="100%" stop-color="#38bdf8"/>
+                            </linearGradient>
+                            <linearGradient id="teachSignupBoard" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#2563eb"/>
+                                <stop offset="100%" stop-color="#8b5cf6"/>
+                            </linearGradient>
+                        </defs>
+                        <rect x="54" y="56" width="312" height="308" rx="46" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.12)"/>
+                        <circle cx="210" cy="158" r="76" fill="url(#teachSignupHead)"/>
+                        <circle cx="184" cy="148" r="13" fill="#04111d"/>
+                        <circle cx="236" cy="148" r="13" fill="#04111d"/>
+                        <path d="M182 184 C196 200, 224 200, 238 184" fill="none" stroke="#04111d" stroke-width="10" stroke-linecap="round"/>
+                        <rect x="144" y="232" width="132" height="100" rx="28" fill="url(#teachSignupBoard)"/>
+                        <rect x="162" y="250" width="96" height="10" rx="5" fill="rgba(255,255,255,0.75)"/>
+                        <rect x="162" y="272" width="84" height="10" rx="5" fill="rgba(255,255,255,0.55)"/>
+                        <rect x="162" y="294" width="74" height="10" rx="5" fill="rgba(255,255,255,0.35)"/>
+                        <rect x="154" y="350" width="112" height="14" rx="7" fill="#cbd5e1"/>
+                        <circle cx="82" cy="126" r="10" fill="#f59e0b"/>
+                        <circle cx="336" cy="126" r="10" fill="#38bdf8"/>
+                        <circle cx="82" cy="304" r="11" fill="#8b5cf6"/>
+                        <circle cx="338" cy="304" r="11" fill="#2dd4bf"/>
+                    </svg>
+                    <div class="avatar-caption">Staff setup</div>
+                    <div class="avatar-note">Use the access code to unlock the teaching dashboard safely.</div>
+                </div>
+
+                <div class="scene-card">
+                    <div class="scene-panel">
+                        <div class="scene-label">Why create an account?</div>
+                        <div class="scene-text">
+                            A teacher profile lets you manage academic records, homework, and attendance from one place.
+                        </div>
+                    </div>
+                    <div class="scene-metrics">
+                        <div class="mini-metric">
+                            <strong>Secure access</strong>
+                            <span>Protected by a teacher code and login.</span>
+                        </div>
+                        <div class="mini-metric">
+                            <strong>Simple setup</strong>
+                            <span>Only the essentials to get started quickly.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="auth-card">
+            <h2>Teacher Signup</h2>
+            <p>Create your teacher identity for the EduTrack panel.</p>
+
+            <form class="auth-form" method="POST" action="{{ url_for('teacher.teacher_signup') }}">
+                <div class="auth-field">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" name="name" required placeholder="Enter full name">
+                </div>
+
+                <div class="auth-field">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required placeholder="Enter email">
+                </div>
+
+                <div class="auth-field">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required placeholder="Create password">
+                </div>
+
+                <div class="auth-field">
+                    <label for="subject">Subject</label>
+                    <select id="subject" name="subject" class="auth-select" required>
+                        {% for subject in subject_options %}
+                        <option value="{{ subject }}">{{ subject }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="auth-field" id="custom-subject-wrap" style="display:none;">
+                    <label for="custom_subject">Custom subject</label>
+                    <input type="text" id="custom_subject" name="custom_subject" placeholder="Enter custom subject">
+                </div>
+
+                <div class="auth-field">
+                    <label for="access_code">Teacher Access Code</label>
+                    <input type="password" id="access_code" name="access_code" required placeholder="EDUTRACK-TEACHER">
+                </div>
+
+                <button type="submit" class="auth-submit">Create Teacher Account</button>
+            </form>
+
+            <div class="auth-links">
+                <span>Already have access? <a href="{{ url_for('teacher.teacher_login') }}">Teacher login</a></span>
+                <span>Student? <a href="{{ url_for('auth.login') }}">Student login</a></span>
+            </div>
+
+            <div class="auth-footnote">
+                Keep the access code private and use the panel to manage attendance, assignments, and reports in a clear workflow.
+            </div>
+        </section>
+    </div>
+</div>
+<script>
+    const subjectSelect = document.getElementById('subject');
+    const customWrap = document.getElementById('custom-subject-wrap');
+    const customInput = document.getElementById('custom_subject');
+
+    function syncCustomSubjectVisibility() {
+        const isOther = subjectSelect && subjectSelect.value === 'Other';
+        if (customWrap) customWrap.style.display = isOther ? 'grid' : 'none';
+        if (customInput) customInput.required = Boolean(isOther);
+    }
+
+    if (subjectSelect) {
+        subjectSelect.addEventListener('change', syncCustomSubjectVisibility);
+        syncCustomSubjectVisibility();
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,12 @@
+Flask
+Flask-SQLAlchemy
+Flask-Bcrypt
+Flask-Login
+Werkzeug
+openai
+python-dotenv
+youtube-search-python
+pypdf
+marked
+pandas
+openpyxl
