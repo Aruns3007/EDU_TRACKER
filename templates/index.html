@@ -277,6 +277,87 @@
         animation: statusPulse 2s ease-in-out infinite;
     }
 
+    .hero-meta {
+        display: grid;
+        gap: 14px;
+        margin-top: 24px;
+    }
+
+    .role-tabs {
+        display: inline-flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 8px;
+        width: fit-content;
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(148, 163, 184, 0.12);
+    }
+
+    .role-tab {
+        border: 0;
+        cursor: pointer;
+        border-radius: 12px;
+        padding: 10px 14px;
+        font-weight: 800;
+        color: #cbd5e1;
+        background: transparent;
+        transition: transform 0.2s ease, color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .role-tab:hover {
+        transform: translateY(-1px);
+        color: #fff;
+    }
+
+    .role-tab.is-active {
+        color: #03111d;
+        background: linear-gradient(135deg, #22d3ee, #3b82f6);
+        box-shadow: 0 14px 24px rgba(34, 211, 238, 0.18);
+    }
+
+    .role-tab:focus-visible {
+        outline: 2px solid rgba(34, 211, 238, 0.7);
+        outline-offset: 2px;
+    }
+
+    .hero-trust {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .trust-item {
+        padding: 14px 16px;
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(148, 163, 184, 0.12);
+        transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+    }
+
+    .trust-item:hover {
+        transform: translateY(-2px);
+        border-color: rgba(34, 211, 238, 0.18);
+        background: rgba(34, 211, 238, 0.06);
+    }
+
+    .trust-value {
+        display: block;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.2rem;
+        font-weight: 700;
+        letter-spacing: -0.03em;
+        color: #fff;
+    }
+
+    .trust-label {
+        display: block;
+        margin-top: 4px;
+        color: #cbd5e1;
+        font-size: 0.82rem;
+        line-height: 1.45;
+    }
+
     .hero-grid {
         display: grid;
         grid-template-columns: minmax(0, 0.98fr) minmax(360px, 1.02fr);
@@ -613,6 +694,11 @@
         will-change: transform;
     }
 
+    .focus-panel {
+        display: grid;
+        gap: 12px;
+    }
+
     .core-kicker {
         display: inline-flex;
         align-items: center;
@@ -634,7 +720,81 @@
         animation: statusPulse 2s ease-in-out infinite;
     }
 
-    .stage-core h3 {
+    .focus-panel h3 {
+        margin: 0;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: clamp(1.35rem, 2vw, 1.9rem);
+        line-height: 1.02;
+        letter-spacing: -0.04em;
+    }
+
+    .focus-panel p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.65;
+        font-size: 0.94rem;
+    }
+
+    .focus-points {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .focus-point {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 12px;
+        border-radius: 999px;
+        color: #dbeafe;
+        font-size: 0.82rem;
+        font-weight: 700;
+        border: 1px solid rgba(148, 163, 184, 0.14);
+        background: rgba(255, 255, 255, 0.04);
+    }
+
+    .focus-point::before {
+        content: "";
+        width: 7px;
+        height: 7px;
+        border-radius: 999px;
+        background: linear-gradient(135deg, #22d3ee, #3b82f6);
+        box-shadow: 0 0 0 0 rgba(34, 211, 238, 0.28);
+        animation: statusPulse 2.6s ease-in-out infinite;
+    }
+
+    .focus-track {
+        display: grid;
+        gap: 8px;
+        margin-top: 2px;
+    }
+
+    .focus-track span {
+        color: #94a3b8;
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        font-weight: 800;
+    }
+
+    .focus-track-bar {
+        height: 5px;
+        border-radius: 999px;
+        overflow: hidden;
+        background: rgba(148, 163, 184, 0.12);
+    }
+
+    .focus-track-bar i {
+        display: block;
+        width: 72%;
+        height: 100%;
+        border-radius: inherit;
+        background: linear-gradient(90deg, rgba(34, 211, 238, 0.9), rgba(59, 130, 246, 0.95));
+        animation: barPulse 5s ease-in-out infinite;
+    }
+
+    .stage-core > h3 {
         margin: 10px 0 8px;
         font-family: 'Space Grotesk', sans-serif;
         font-size: clamp(1.35rem, 2vw, 1.9rem);
@@ -642,7 +802,7 @@
         letter-spacing: -0.04em;
     }
 
-    .stage-core p {
+    .stage-core > p {
         margin: 0;
         color: var(--muted);
         line-height: 1.65;
@@ -666,6 +826,13 @@
         font-size: 0.84rem;
         line-height: 1.45;
         min-height: 100%;
+        transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+    }
+
+    .signal-pill:hover {
+        transform: translateY(-2px);
+        border-color: rgba(34, 211, 238, 0.18);
+        background: rgba(34, 211, 238, 0.06);
     }
 
     .feature-grid {
@@ -739,6 +906,62 @@
         filter: blur(0);
     }
 
+    .landing-page[data-active-role="student"] .status-pill {
+        background: rgba(34, 211, 238, 0.10);
+        border-color: rgba(34, 211, 238, 0.18);
+        color: #d9fbff;
+    }
+
+    .landing-page[data-active-role="teacher"] .status-pill {
+        background: rgba(245, 158, 11, 0.10);
+        border-color: rgba(245, 158, 11, 0.18);
+        color: #fff4dd;
+    }
+
+    .landing-page[data-active-role="student"] .path-card.student,
+    .landing-page[data-active-role="teacher"] .path-card.teacher {
+        border-color: rgba(34, 211, 238, 0.24);
+        background: linear-gradient(180deg, rgba(15, 23, 42, 0.98), rgba(15, 23, 42, 0.72));
+        box-shadow: 0 24px 50px rgba(34, 211, 238, 0.10);
+    }
+
+    .landing-page[data-active-role="teacher"] .path-card.teacher {
+        border-color: rgba(245, 158, 11, 0.26);
+        box-shadow: 0 24px 50px rgba(245, 158, 11, 0.10);
+    }
+
+    .landing-page[data-active-role="student"] .path-card.teacher,
+    .landing-page[data-active-role="teacher"] .path-card.student {
+        opacity: 0.84;
+        border-color: rgba(148, 163, 184, 0.10);
+    }
+
+    .landing-page[data-active-role="student"] .mini-link.student,
+    .landing-page[data-active-role="teacher"] .mini-link.teacher {
+        transform: translateY(-1px);
+        box-shadow: 0 12px 24px rgba(255, 255, 255, 0.04);
+    }
+
+    .landing-page[data-active-role="student"] .role-tab[data-role-tab="student"] {
+        color: #03111d;
+        background: linear-gradient(135deg, #22d3ee, #3b82f6);
+        box-shadow: 0 14px 24px rgba(34, 211, 238, 0.18);
+    }
+
+    .landing-page[data-active-role="teacher"] .role-tab[data-role-tab="teacher"] {
+        color: #03111d;
+        background: linear-gradient(135deg, #f59e0b, #fb7185);
+        box-shadow: 0 14px 24px rgba(245, 158, 11, 0.18);
+    }
+
+    .landing-page[data-active-role="student"] .stage-orbit {
+        background: radial-gradient(circle, rgba(34, 211, 238, 0.24), rgba(59, 130, 246, 0.08), transparent 68%);
+    }
+
+    .landing-page[data-active-role="teacher"] .stage-orbit {
+        background: radial-gradient(circle, rgba(245, 158, 11, 0.22), rgba(59, 130, 246, 0.08), transparent 68%);
+    }
+
     @keyframes bgShift {
         0% { background-position: 0% 50%; }
         50% { background-position: 100% 50%; }
@@ -795,6 +1018,10 @@
             grid-template-columns: 1fr;
         }
 
+        .hero-trust {
+            grid-template-columns: 1fr;
+        }
+
         .stage-grid {
             grid-template-columns: 1fr 1fr;
         }
@@ -818,6 +1045,10 @@
         .signal-row,
         .metric-row {
             grid-template-columns: 1fr;
+        }
+
+        .role-tabs {
+            width: 100%;
         }
 
         .headline {
@@ -865,6 +1096,10 @@
 
         .action-btn {
             width: 100%;
+        }
+
+        .hero-trust {
+            grid-template-columns: 1fr;
         }
 
         .metric-row,
@@ -934,7 +1169,7 @@
     }
 </style>
 
-<main class="landing-page">
+<main class="landing-page" data-active-role="student">
     <div class="aurora" aria-hidden="true"></div>
     <div class="mesh-grid" aria-hidden="true"></div>
     <div class="scanlines" aria-hidden="true"></div>
@@ -955,7 +1190,7 @@
                     <p>Animated learning space for students and teachers</p>
                 </div>
             </div>
-            <div class="status-pill">LIVE | AI Core Ready</div>
+            <div class="status-pill" data-role-status>LIVE | Student flow ready</div>
         </header>
 
         <section class="hero-grid">
@@ -966,6 +1201,28 @@
                     EduTrack AI keeps the student and teacher experience clean while the interface feels alive with layered motion,
                     floating depth, and fast navigation to the right workspace.
                 </p>
+
+                <div class="hero-meta">
+                    <div class="role-tabs" role="tablist" aria-label="Choose your entry path">
+                        <button type="button" class="role-tab is-active" data-role-tab="student" aria-pressed="true">Student path</button>
+                        <button type="button" class="role-tab" data-role-tab="teacher" aria-pressed="false">Teacher path</button>
+                    </div>
+
+                    <div class="hero-trust">
+                        <div class="trust-item">
+                            <span class="trust-value">2</span>
+                            <span class="trust-label">Clear entry paths that stay easy to scan</span>
+                        </div>
+                        <div class="trust-item">
+                            <span class="trust-value">Live</span>
+                            <span class="trust-label">Motion-first surface with soft, layered animation</span>
+                        </div>
+                        <div class="trust-item">
+                            <span class="trust-value">Fast</span>
+                            <span class="trust-label">Quick handoff into the right workspace</span>
+                        </div>
+                    </div>
+                </div>
 
                 <div class="action-row">
                     <a class="action-btn primary" href="{{ url_for('auth.login') }}">Student Login</a>
@@ -992,12 +1249,12 @@
                 </div>
 
                 <div class="chip-row">
-                    <div class="chip">Animated background</div>
-                    <div class="chip">Student friendly</div>
-                    <div class="chip">Teacher friendly</div>
+                    <div class="chip" data-role-chip="0">Animated background</div>
+                    <div class="chip" data-role-chip="1">Student friendly</div>
+                    <div class="chip" data-role-chip="2">Teacher friendly</div>
                 </div>
 
-                <div class="scroll-hint">Choose a path below</div>
+                <div class="scroll-hint">Hover or tap a path below</div>
             </div>
 
             <div class="hero-stage reveal" data-parallax data-depth="0.13">
@@ -1005,16 +1262,26 @@
                     <div class="stage-orbit" aria-hidden="true"></div>
 
                     <div class="stage-core reveal" data-parallax data-depth="0.06">
-                        <span class="core-kicker">Live surface</span>
-                        <h3>One hub, two roles, zero friction.</h3>
-                        <p>
-                            Students and teachers enter through separate motion paths that still feel like one system.
-                            The right action stays obvious, calm, and immediate.
-                        </p>
+                        <div class="focus-panel">
+                            <span class="core-kicker" data-role-kicker>Student path</span>
+                            <h3 data-role-title>Study, track, and ask with less friction.</h3>
+                            <p data-role-copy>
+                                The student lane keeps attendance, notes, timetable, and AI support close together so the page feels calm and quick.
+                            </p>
+                            <div class="focus-points" data-role-points>
+                                <span class="focus-point">Study notes</span>
+                                <span class="focus-point">AI assistant</span>
+                                <span class="focus-point">Timetable access</span>
+                            </div>
+                            <div class="focus-track" aria-hidden="true">
+                                <span>Path momentum</span>
+                                <div class="focus-track-bar"><i></i></div>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="stage-grid">
-                        <div class="path-card student" data-parallax data-depth="0.18">
+                        <div class="path-card student" data-parallax data-depth="0.18" data-role-card="student">
                         <img src="{{ url_for('static', filename='images/student-login-hero.png') }}" alt="Student login preview">
                         <div class="path-label">
                             <strong>Student Space</strong>
@@ -1025,7 +1292,7 @@
                         </div>
                         </div>
 
-                        <div class="path-card teacher" data-parallax data-depth="-0.16">
+                        <div class="path-card teacher" data-parallax data-depth="-0.16" data-role-card="teacher">
                         <img src="{{ url_for('static', filename='images/teacher-login-hero.png') }}" alt="Teacher login preview">
                         <div class="path-label">
                             <strong>Teacher Space</strong>
@@ -1038,9 +1305,9 @@
                     </div>
 
                     <div class="signal-row">
-                        <div class="signal-pill">Soft motion layers keep the page active without feeling busy.</div>
-                        <div class="signal-pill">Students and teachers can jump straight to the right flow.</div>
-                        <div class="signal-pill">The interface stays vibrant, structured, and calm.</div>
+                        <div class="signal-pill" data-role-signal="0">Soft motion layers keep the page active without feeling busy.</div>
+                        <div class="signal-pill" data-role-signal="1">Students and teachers can jump straight to the right flow.</div>
+                        <div class="signal-pill" data-role-signal="2">The interface stays vibrant, structured, and calm.</div>
                     </div>
                 </div>
             </div>
@@ -1063,13 +1330,105 @@
     </div>
 </main>
 
-<script>
+    <script>
     document.addEventListener('DOMContentLoaded', () => {
         const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const landingPage = document.querySelector('.landing-page');
         const revealTargets = Array.from(document.querySelectorAll('.reveal'));
         const parallaxItems = Array.from(document.querySelectorAll('[data-parallax]'));
         const field = document.getElementById('particle-field');
         const pointerLight = document.getElementById('pointer-light');
+        const roleTabs = Array.from(document.querySelectorAll('[data-role-tab]'));
+        const roleCards = Array.from(document.querySelectorAll('[data-role-card]'));
+        const statusPill = document.querySelector('[data-role-status]');
+        const roleKicker = document.querySelector('[data-role-kicker]');
+        const roleTitle = document.querySelector('[data-role-title]');
+        const roleCopy = document.querySelector('[data-role-copy]');
+        const rolePoints = document.querySelector('[data-role-points]');
+        const roleSignals = Array.from(document.querySelectorAll('[data-role-signal]'));
+        const roleChips = Array.from(document.querySelectorAll('[data-role-chip]'));
+
+        const roleConfig = {
+            student: {
+                status: 'LIVE | Student flow ready',
+                kicker: 'Student path',
+                title: 'Study, track, and ask with less friction.',
+                copy: 'The student lane keeps attendance, notes, timetable, and AI support close together so the page feels calm and quick.',
+                points: ['Study notes', 'AI assistant', 'Timetable access'],
+                chips: ['Learner-first', 'Quick revision', 'Visual help'],
+                signals: [
+                    'Soft motion layers keep the page active without feeling busy.',
+                    'Students can jump straight into the right flow without hunting for tools.',
+                    'The interface stays vibrant, structured, and calm.',
+                ],
+            },
+            teacher: {
+                status: 'LIVE | Teacher flow ready',
+                kicker: 'Teacher path',
+                title: 'Class control with a clear, calm surface.',
+                copy: 'The teacher lane stays professional while still using modern motion to make attendance, homework, and class tools easier to scan.',
+                points: ['Attendance review', 'Homework center', 'Teacher notes'],
+                chips: ['Staff workflow', 'Quick reporting', 'Class clarity'],
+                signals: [
+                    'A stronger visual hierarchy helps teaching tools stay easy to read.',
+                    'Teachers can move into reporting and management without visual clutter.',
+                    'Modern motion keeps the surface polished while remaining practical.',
+                ],
+            },
+        };
+
+        const setActiveRole = (role) => {
+            const config = roleConfig[role] || roleConfig.student;
+
+            if (landingPage) {
+                landingPage.dataset.activeRole = role in roleConfig ? role : 'student';
+            }
+
+            if (statusPill) {
+                statusPill.textContent = config.status;
+            }
+
+            if (roleKicker) {
+                roleKicker.textContent = config.kicker;
+            }
+
+            if (roleTitle) {
+                roleTitle.textContent = config.title;
+            }
+
+            if (roleCopy) {
+                roleCopy.textContent = config.copy;
+            }
+
+            if (rolePoints) {
+                rolePoints.innerHTML = config.points.map((point) => `<span class="focus-point">${point}</span>`).join('');
+            }
+
+            roleSignals.forEach((signal, index) => {
+                signal.textContent = config.signals[index] || signal.textContent;
+            });
+
+            roleChips.forEach((chip, index) => {
+                chip.textContent = config.chips[index] || chip.textContent;
+            });
+
+            roleTabs.forEach((tab) => {
+                const isActive = tab.dataset.roleTab === role;
+                tab.classList.toggle('is-active', isActive);
+                tab.setAttribute('aria-pressed', String(isActive));
+            });
+        };
+
+        setActiveRole('student');
+
+        roleTabs.forEach((tab) => {
+            tab.addEventListener('click', () => setActiveRole(tab.dataset.roleTab || 'student'));
+        });
+
+        roleCards.forEach((card) => {
+            card.addEventListener('pointerenter', () => setActiveRole(card.dataset.roleCard || 'student'));
+            card.addEventListener('focusin', () => setActiveRole(card.dataset.roleCard || 'student'));
+        });
 
         if ('IntersectionObserver' in window) {
             const observer = new IntersectionObserver((entries) => {

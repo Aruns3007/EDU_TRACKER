@@ -65,19 +65,27 @@ def get_db_connection():
 
 def _build_system_prompt():
     return (
-        "You are EduTrack AI, a warm and practical study assistant for students.\n"
-        "Explain things clearly, simply, and in a friendly tone.\n"
-        "When a screenshot, image, or file is attached, analyze it carefully and use it to answer.\n"
-        "If the user asks for an image, diagram, poster, cartoon, avatar, or study visual, create a helpful visual response.\n"
-        "Give short steps, examples, and study tips when helpful.\n"
+        "You are EduTrack AI, a patient and powerful assistant for school students, college students, and curious learners.\n"
+        "Explain things like a great teacher would: simple, accurate, friendly, and focused.\n"
+        "Help with subjects, projects, coding, research, interviews, placements, and general knowledge.\n"
+        "Always structure answers clearly with headings and bullet points.\n"
+        "Use this format when it fits the question:\n"
+        "### Quick Answer\n"
+        "### Point by Point\n"
+        "### Example or Application\n"
+        "### Study Channels or Resources\n"
+        "### Next Step\n"
+        "Prefer short steps, examples, and quick revision points.\n"
+        "If the user asks about a topic, give a clear explanation and practical next steps.\n"
+        "If the user asks for resources, recommend useful YouTube channels for that topic.\n"
+        "Use attached images or files carefully when they are provided.\n"
+        "If the user asks for a visual, diagram, poster, or study image, respond with a useful visual result.\n"
         "Use markdown only. Never output raw HTML.\n"
         "If the user writes in Tamil, reply in Tamil.\n"
-        "Use conversation history when it is provided so follow-up questions stay connected.\n"
-        "Keep the answer concise unless the question needs detail.\n"
-        "If you mention media, refer to the provided links naturally."
+        "Keep answers concise unless more detail is clearly needed."
     )
 
-def _build_user_prompt(user_message, sched, vault, yt_context, image_context, attachment_context='', history_context=''):
+def _build_user_prompt(user_message, sched, vault, yt_context, image_context, study_channel_context='', attachment_context='', history_context=''):
     return (
         f"Conversation history:\n{history_context or 'None'}\n\n"
         f"User question: {user_message}\n\n"
@@ -85,17 +93,198 @@ def _build_user_prompt(user_message, sched, vault, yt_context, image_context, at
         f"Vault context: {vault}\n"
         f"{attachment_context}\n\n"
         f"Video links:\n{yt_context or 'None'}\n\n"
-        f"Image links:\n{image_context or 'None'}"
+        f"Image links:\n{image_context or 'None'}\n\n"
+        f"Study channels:\n{study_channel_context or 'None'}\n\n"
+        f"Reply rules:\n"
+        f"- Keep the answer structured and easy to scan.\n"
+        f"- Use bullet points or numbered points for explanations.\n"
+        f"- If you include channels, keep them under a dedicated Study Channels section.\n"
+        f"- If the answer is short, still keep it neatly separated."
     )
+
+def _extract_study_topic(user_message):
+    text = _safe_text(user_message).lower()
+    if not text:
+        return ''
+
+    fillers = [
+        'can you', 'could you', 'please', 'tell me', 'teach me', 'help me', 'explain',
+        'what is', 'how to', 'show me', 'give me', 'i want', 'need', 'about',
+        'youtube channel', 'youtube channels', 'video', 'videos', 'study', 'subject',
+        'learn', 'lecture', 'notes', 'summary', 'tutorial', 'channel'
+    ]
+
+    for prefix in fillers:
+        text = text.replace(prefix, ' ')
+
+    cleaned = ' '.join(text.split())
+    return cleaned[:80].strip(' ,.?')
+
+def _study_channel_catalog():
+    return [
+        {
+            'title': 'Khan Academy',
+            'topics': ['math', 'mathematics', 'algebra', 'geometry', 'calculus', 'physics', 'chemistry', 'biology', 'science', 'economics'],
+            'url': 'https://www.youtube.com/@khanacademy',
+            'why': 'Clear basics and step-by-step lessons.'
+        },
+        {
+            'title': 'CrashCourse',
+            'topics': ['history', 'science', 'biology', 'chemistry', 'physics', 'english', 'literature', 'psychology', 'economics', 'college'],
+            'url': 'https://www.youtube.com/@crashcourse',
+            'why': 'Fast, engaging overviews for revision.'
+        },
+        {
+            'title': '3Blue1Brown',
+            'topics': ['math', 'mathematics', 'calculus', 'linear algebra', 'probability'],
+            'url': 'https://www.youtube.com/@3blue1brown',
+            'why': 'Best for visual understanding of math.'
+        },
+        {
+            'title': 'Amoeba Sisters',
+            'topics': ['biology', 'human biology', 'cell', 'genetics', 'life science'],
+            'url': 'https://www.youtube.com/@AmoebaSisters',
+            'why': 'Simple and memorable biology explanations.'
+        },
+        {
+            'title': 'MinutePhysics',
+            'topics': ['physics', 'science'],
+            'url': 'https://www.youtube.com/@MinutePhysics',
+            'why': 'Short, visual physics explanations.'
+        },
+        {
+            'title': 'Veritasium',
+            'topics': ['physics', 'science', 'engineering', 'stem', 'general knowledge'],
+            'url': 'https://www.youtube.com/@veritasium',
+            'why': 'Deep science explanations and experiments.'
+        },
+        {
+            'title': 'Tyler DeWitt',
+            'topics': ['chemistry', 'biology', 'science'],
+            'url': 'https://www.youtube.com/@TylerDeWitt',
+            'why': 'Friendly classroom-style science teaching.'
+        },
+        {
+            'title': 'freeCodeCamp',
+            'topics': ['computer science', 'programming', 'python', 'javascript', 'coding', 'web development', 'data structures', 'ai', 'machine learning', 'college project', 'project'],
+            'url': 'https://www.youtube.com/@freecodecamp',
+            'why': 'Long-form practical coding lessons.'
+        },
+        {
+            'title': 'Corey Schafer',
+            'topics': ['python', 'programming', 'coding', 'django', 'flask'],
+            'url': 'https://www.youtube.com/@coreyms',
+            'why': 'Excellent Python tutorials for real projects.'
+        },
+        {
+            'title': 'Programming with Mosh',
+            'topics': ['python', 'programming', 'coding', 'javascript', 'web development'],
+            'url': 'https://www.youtube.com/@programmingwithmosh',
+            'why': 'Very clear beginner-friendly coding lessons.'
+        },
+        {
+            'title': 'Bro Code',
+            'topics': ['python', 'programming', 'coding', 'java', 'javascript'],
+            'url': 'https://www.youtube.com/@BroCodez',
+            'why': 'Simple and fast coding explanations.'
+        },
+        {
+            'title': 'CS50',
+            'topics': ['computer science', 'programming', 'coding', 'python', 'data structures', 'algorithms', 'college', 'project'],
+            'url': 'https://www.youtube.com/@cs50',
+            'why': 'Strong foundation for computer science.'
+        },
+        {
+            'title': 'MIT OpenCourseWare',
+            'topics': ['college', 'engineering', 'computer science', 'math', 'physics', 'economics', 'research', 'lecture'],
+            'url': 'https://www.youtube.com/@mitocw',
+            'why': 'Real university lectures and deep academic content.'
+        },
+        {
+            'title': 'Neso Academy',
+            'topics': ['engineering', 'computer science', 'electronics', 'networking', 'os', 'dbms', 'data structures', 'compiler'],
+            'url': 'https://www.youtube.com/@nesoacademy',
+            'why': 'Great for engineering and computer science concepts.'
+        },
+        {
+            'title': 'Apna College',
+            'topics': ['placement', 'interview', 'resume', 'coding', 'python', 'java', 'web development', 'college'],
+            'url': 'https://www.youtube.com/@ApnaCollegeOfficial',
+            'why': 'Useful for college students, placement prep, and coding.'
+        },
+        {
+            'title': 'BBC Learning English',
+            'topics': ['english', 'grammar', 'vocabulary', 'speaking', 'writing'],
+            'url': 'https://www.youtube.com/@bbclearningenglish',
+            'why': 'Great for English practice and grammar.'
+        },
+        {
+            'title': 'The Futur',
+            'topics': ['design', 'career', 'portfolio', 'presentation', 'communication', 'business'],
+            'url': 'https://www.youtube.com/@thefutur',
+            'why': 'Helpful for design, communication, and career growth.'
+        },
+        {
+            'title': 'Ali Abdaal',
+            'topics': ['productivity', 'study habits', 'college', 'career', 'productivity', 'learning'],
+            'url': 'https://www.youtube.com/@AliAbdaal',
+            'why': 'Study systems, productivity, and student life tips.'
+        },
+        {
+            'title': 'TED-Ed',
+            'topics': ['general', 'science', 'history', 'math', 'english', 'philosophy', 'college', 'education'],
+            'url': 'https://www.youtube.com/@TEDEd',
+            'why': 'Short animated lessons across many subjects.'
+        },
+    ]
+
+def _format_study_channel_card(channel, topic=''):
+    title = _safe_text(channel.get('title') or 'Study Channel')
+    url = _safe_text(channel.get('url') or '')
+    why = _safe_text(channel.get('why') or '')
+    return f"- [{title}]({url}) - {why}"
+
+def get_study_channel_recommendations(query, limit=3):
+    topic = _extract_study_topic(query) or _safe_text(query, 'study')
+    text = f"{query or ''} {topic}".lower()
+    scored = []
+
+    for channel in _study_channel_catalog():
+        score = 0
+        for keyword in channel.get('topics', []):
+            if keyword in text:
+                score += 2
+        if channel.get('title', '').lower() in text:
+            score += 3
+        if score > 0:
+            scored.append((score, channel))
+
+    if not scored:
+        fallback_titles = ['Khan Academy', 'CrashCourse', 'TED-Ed']
+        fallback = []
+        catalog = _study_channel_catalog()
+        for wanted in fallback_titles:
+            for channel in catalog:
+                if channel['title'] == wanted:
+                    fallback.append(channel)
+                    break
+        scored = [(1, channel) for channel in fallback]
+
+    scored.sort(key=lambda item: (-item[0], item[1].get('title', '')))
+    selected = [channel for _, channel in scored[:limit]]
+    lines = [f"### Best YouTube channels for {topic}"]
+    for channel in selected:
+        lines.append(_format_study_channel_card(channel, topic))
+    return '\n'.join(lines)
 
 def _normalize_history(history):
     normalized = []
     if not isinstance(history, list):
         return normalized
 
-    limit = current_app.config.get('CHAT_HISTORY_LIMIT', 16)
+    limit = current_app.config.get('CHAT_HISTORY_LIMIT', 12)
     for item in history[-limit:]:
-        if len(normalized) >= current_app.config.get('CHAT_HISTORY_LIMIT', 16):
+        if len(normalized) >= current_app.config.get('CHAT_HISTORY_LIMIT', 12):
             break
         if not isinstance(item, dict):
             continue
@@ -152,7 +341,7 @@ def _ollama_model_candidates():
 
 def _call_ollama_chat(model_name, system_prompt, user_prompt, image_attachments=None):
     host = current_app.config.get('OLLAMA_HOST', 'http://localhost:11434').rstrip('/')
-    timeout_seconds = current_app.config.get('OLLAMA_TIMEOUT_SECONDS', 90)
+    timeout_seconds = current_app.config.get('OLLAMA_TIMEOUT_SECONDS', 25)
     message = {
         'role': 'user',
         'content': user_prompt,
@@ -541,7 +730,10 @@ def generate_assistant_reply(system_prompt, user_prompt, attachments=None):
 
     if OpenAI is not None and api_key:
         try:
-            client = OpenAI(api_key=api_key)
+            try:
+                client = OpenAI(api_key=api_key, timeout=25.0)
+            except TypeError:
+                client = OpenAI(api_key=api_key)
             if image_attachments:
                 content = [{'type': 'input_text', 'text': user_prompt}]
                 for item in image_attachments:
@@ -563,7 +755,7 @@ def generate_assistant_reply(system_prompt, user_prompt, attachments=None):
         except Exception as exc:
             print(f"OpenAI response error: {exc}")
 
-    if current_app.config.get('OLLAMA_HOST'):
+    if current_app.config.get('ENABLE_OLLAMA') and current_app.config.get('OLLAMA_HOST'):
         last_error = None
         for ollama_model in _ollama_model_candidates():
             try:
@@ -875,16 +1067,28 @@ def ask():
         'generate an infographic', 'create an infographic', 'make an infographic',
         'generate a cartoon', 'create a cartoon', 'make a cartoon',
     ]
+    academic_triggers = [
+        'explain', 'teach', 'study', 'learn', 'notes', 'summary', 'revision',
+        'subject', 'chapter', 'topic', 'how to', 'what is', 'why', 'solve',
+        'video', 'youtube', 'channel', 'tutorial', 'class'
+    ]
     is_video_request = any(word in user_msg_lower for word in video_triggers)
     is_image_request = any(word in user_msg_lower for word in image_triggers) or any(phrase in user_msg_lower for phrase in image_phrases)
+    needs_study_channels = is_video_request or any(word in user_msg_lower for word in academic_triggers)
+    needs_schedule_context = any(word in user_msg_lower for word in ['timetable', 'schedule', 'class', 'period', 'today', 'tomorrow'])
+    needs_vault_context = any(word in user_msg_lower for word in ['vault', 'document', 'certificate', 'file', 'upload'])
 
-    sched = get_today_schedule(current_user.id)
-    vault = get_vault_context(current_user.id)
+    sched = get_today_schedule(current_user.id) if needs_schedule_context else "Not needed for this question."
+    vault = get_vault_context(current_user.id) if needs_vault_context else "Not needed for this question."
     attachment_context, attachment_images = _build_attachment_context(attachments)
     
     yt_context = ""
     if is_video_request:
         yt_context = get_youtube_videos(user_message)
+
+    study_channel_context = ""
+    if needs_study_channels:
+        study_channel_context = get_study_channel_recommendations(user_message)
 
     image_context = ""
     if is_image_request:
@@ -899,6 +1103,7 @@ def ask():
         vault,
         yt_context,
         image_context,
+        study_channel_context,
         attachment_context,
         history_context,
     )
@@ -911,6 +1116,8 @@ def ask():
         media_blocks.append(image_context)
     if yt_context:
         media_blocks.append(yt_context)
+    if study_channel_context:
+        media_blocks.append(study_channel_context)
 
     if media_blocks:
         combined_media = "\n\n".join(media_blocks)
@@ -919,6 +1126,8 @@ def ask():
                 final_response = f"{image_context}\n\n{final_response}"
             if yt_context and 'VIDEO_CARD:' not in final_response and 'VIDEO_LINK:[' not in final_response:
                 final_response = f"{final_response}\n\n{yt_context}"
+            if study_channel_context and 'Best YouTube channels' not in final_response:
+                final_response = f"{final_response}\n\n{study_channel_context}"
         else:
             final_response = combined_media
 
@@ -930,7 +1139,7 @@ def ask():
             if media_blocks
             else "I can analyze screenshots, images, and supported files if you attach them."
             if attachment_context
-            else "AI Chat is currently offline. Add OPENAI_API_KEY for the best experience."
+            else "I couldn't generate a response right now. Please try again."
         )
 
     return jsonify({'response': final_response})
