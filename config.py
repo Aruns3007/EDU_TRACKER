@@ -25,10 +25,13 @@ VAULT_PATH.mkdir(parents=True, exist_ok=True)
 DB_DIR.mkdir(parents=True, exist_ok=True)
 
 class Config:
-    SECRET_KEY = os.environ.get('SECRET_KEY', 'your_secret_key_123')
-    TEACHER_ACCESS_CODE = os.environ.get('TEACHER_ACCESS_CODE', 'EDUTRACK-TEACHER')
+    # Never ship a fixed secret key. Use the environment, or generate a
+    # per-process key for local development when no env var is provided.
+    SECRET_KEY = os.environ.get('SECRET_KEY') or os.urandom(32).hex()
+    TEACHER_ACCESS_CODE = os.environ.get('TEACHER_ACCESS_CODE', '').strip()
     ATTENDANCE_SHEET_FILE = str(DB_DIR / 'attendance_records.csv')
     OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY', '')
+    # Keep this overrideable via env; the default matches the current OpenAI model docs.
     OPENAI_MODEL = os.environ.get('OPENAI_MODEL', 'gpt-5.4-mini')
     OPENAI_IMAGE_MODEL = os.environ.get('OPENAI_IMAGE_MODEL', 'gpt-image-1-mini')
     ENABLE_OPENAI_IMAGES = os.environ.get('ENABLE_OPENAI_IMAGES', '0').lower() in ('1', 'true', 'yes', 'on')

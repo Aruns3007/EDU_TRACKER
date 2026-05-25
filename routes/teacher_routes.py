@@ -83,7 +83,12 @@ def teacher_signup():
 
     if request.method == 'POST':
         access_code = request.form.get('access_code', '').strip()
-        if access_code != current_app.config.get('TEACHER_ACCESS_CODE', 'EDUTRACK-TEACHER'):
+        configured_access_code = current_app.config.get('TEACHER_ACCESS_CODE', '').strip()
+        if not configured_access_code:
+            flash('Teacher access code is not configured. Set TEACHER_ACCESS_CODE in your environment.', 'danger')
+            return render_template('teacher_signup.html', subject_options=SUBJECT_OPTIONS)
+
+        if access_code != configured_access_code:
             flash('Invalid teacher access code.', 'danger')
             return render_template('teacher_signup.html', subject_options=SUBJECT_OPTIONS)
 

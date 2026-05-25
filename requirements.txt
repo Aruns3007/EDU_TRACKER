@@ -7,6 +7,5 @@ openai
 python-dotenv
 youtube-search-python
 pypdf
-marked
 pandas
 openpyxl

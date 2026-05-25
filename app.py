@@ -235,4 +235,5 @@ if __name__ == "__main__":
     setup_folders()
     init_db()
     # Disable the reloader to avoid SQLite file-lock races on Windows.
+    # Restart the server manually after code changes.
     app.run(debug=True, port=5000, use_reloader=False)
