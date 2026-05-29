@@ -1,7 +1,8 @@
 import os
 from flask import Blueprint, render_template, request, flash, redirect, url_for, current_app
 from flask_login import login_required, current_user
-from models.attendance_model import Attendancefrom models.notes_model import Notes
+from models.attendance_model import Attendance
+from models.notes_model import Notes
 from models.homework_model import Homework
 from models.timetable_model import Timetable
 from models.teacher_notes_model import TeacherNote

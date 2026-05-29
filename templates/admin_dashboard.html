@@ -1,0 +1,387 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+    .admin-page {
+        --bg: #040814;
+        --panel: rgba(10, 15, 28, 0.9);
+        --panel-soft: rgba(15, 23, 42, 0.84);
+        --border: rgba(148, 163, 184, 0.14);
+        --text: #e8eef9;
+        --muted: #94a3b8;
+        --accent: #22d3ee;
+        --accent-2: #34d399;
+        --accent-3: #60a5fa;
+        width: min(1720px, 100%);
+        margin: 0 auto;
+        box-sizing: border-box;
+        padding: 26px;
+        color: var(--text);
+        background:
+            radial-gradient(circle at top left, rgba(34, 211, 238, 0.12), transparent 30%),
+            radial-gradient(circle at top right, rgba(96, 165, 250, 0.10), transparent 28%),
+            radial-gradient(circle at bottom left, rgba(52, 211, 153, 0.10), transparent 24%),
+            linear-gradient(180deg, #020617 0%, #0b1220 52%, #111827 100%);
+    }
+
+    .hero,
+    .panel,
+    .stat-card {
+        position: relative;
+        overflow: hidden;
+        background: linear-gradient(180deg, var(--panel), var(--panel-soft));
+        border: 1px solid var(--border);
+        border-radius: 24px;
+        box-shadow: 0 18px 48px rgba(0, 0, 0, 0.24);
+        backdrop-filter: blur(16px);
+    }
+
+    .hero::before,
+    .panel::before,
+    .stat-card::before {
+        content: "";
+        position: absolute;
+        inset: 0 0 auto 0;
+        height: 3px;
+        background: linear-gradient(90deg, var(--accent), var(--accent-2), transparent 90%);
+    }
+
+    .hero {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 18px;
+        align-items: center;
+        padding: 24px 26px;
+        margin-bottom: 18px;
+        border-radius: 28px;
+    }
+
+    .eyebrow {
+        margin: 0 0 10px 0;
+        color: var(--accent);
+        text-transform: uppercase;
+        letter-spacing: 2.4px;
+        font-size: 0.76rem;
+        font-weight: 800;
+    }
+
+    .hero h1 {
+        margin: 0;
+        color: #ffffff;
+        font-size: clamp(2rem, 3.4vw, 3.15rem);
+        letter-spacing: -0.04em;
+        line-height: 1.05;
+    }
+
+    .hero p {
+        margin: 10px 0 0 0;
+        color: var(--muted);
+        max-width: 900px;
+        line-height: 1.6;
+    }
+
+    .hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+
+    .btn {
+        border: 0;
+        border-radius: 14px;
+        padding: 11px 16px;
+        text-decoration: none;
+        font-weight: 700;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 42px;
+    }
+
+    .btn:hover {
+        transform: translateY(-1px);
+        filter: brightness(1.04);
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--accent), var(--accent-3));
+        color: #04111d;
+        box-shadow: 0 14px 30px rgba(34, 211, 238, 0.16);
+    }
+
+    .btn-soft {
+        background: rgba(148, 163, 184, 0.12);
+        color: #e2e8f0;
+        border: 1px solid rgba(148, 163, 184, 0.16);
+    }
+
+    .stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+        gap: 16px;
+        margin-bottom: 18px;
+    }
+
+    .stat-card {
+        padding: 18px;
+        min-height: 126px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 8px;
+    }
+
+    .stat-card h3 {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.76rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 700;
+    }
+
+    .stat-card strong {
+        display: block;
+        margin-top: 4px;
+        font-size: 2.05rem;
+        color: #ffffff;
+        letter-spacing: -0.04em;
+    }
+
+    .stat-card span {
+        display: block;
+        color: var(--muted);
+        font-size: 0.88rem;
+        line-height: 1.45;
+    }
+
+    .section-list {
+        display: grid;
+        gap: 18px;
+    }
+
+    .panel {
+        padding: 20px;
+    }
+
+    .panel-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        margin-bottom: 12px;
+    }
+
+    .panel h2 {
+        margin: 0 0 8px 0;
+        color: #ffffff;
+        font-size: 1.18rem;
+        letter-spacing: -0.02em;
+    }
+
+    .subtle {
+        color: var(--muted);
+        margin: 0;
+        font-size: 0.92rem;
+        line-height: 1.55;
+    }
+
+    .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 7px 11px;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        font-weight: 800;
+        letter-spacing: 0.02em;
+        border: 1px solid transparent;
+        white-space: nowrap;
+    }
+
+    .pill-accent {
+        background: rgba(34, 211, 238, 0.12);
+        color: #7dd3fc;
+        border-color: rgba(34, 211, 238, 0.18);
+    }
+
+    .pill-green {
+        background: rgba(52, 211, 153, 0.12);
+        color: #86efac;
+        border-color: rgba(52, 211, 153, 0.18);
+    }
+
+    .pill-blue {
+        background: rgba(96, 165, 250, 0.12);
+        color: #93c5fd;
+        border-color: rgba(96, 165, 250, 0.18);
+    }
+
+    .table-wrap {
+        overflow-x: auto;
+        border: 1px solid rgba(148, 163, 184, 0.12);
+        border-radius: 18px;
+        background: rgba(2, 6, 23, 0.22);
+    }
+
+    .data-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        min-width: 860px;
+    }
+
+    .data-table th,
+    .data-table td {
+        text-align: left;
+        padding: 14px 12px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        vertical-align: top;
+    }
+
+    .data-table th {
+        color: #a7b4c8;
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 1.2px;
+        background: rgba(2, 6, 23, 0.48);
+        position: sticky;
+        top: 0;
+        z-index: 1;
+    }
+
+    .data-table tbody tr:hover td {
+        background: rgba(255, 255, 255, 0.02);
+    }
+
+    .mono {
+        font-family: Consolas, 'Courier New', monospace;
+        font-size: 0.88rem;
+        word-break: break-word;
+    }
+
+    .empty {
+        padding: 16px;
+        color: var(--muted);
+    }
+
+    .anchor-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 14px;
+    }
+
+    @media (max-width: 1200px) {
+        .hero {
+            grid-template-columns: 1fr;
+        }
+
+        .hero-actions {
+            justify-content: flex-start;
+        }
+    }
+
+    @media (max-width: 1024px) {
+        .admin-page {
+            padding: 18px;
+        }
+    }
+
+    @media (max-width: 720px) {
+        .admin-page {
+            padding: 16px;
+        }
+
+        .hero,
+        .panel {
+            padding: 18px;
+            border-radius: 20px;
+        }
+
+        .stat-card strong {
+            font-size: 1.85rem;
+        }
+
+        .data-table {
+            min-width: 780px;
+        }
+    }
+</style>
+
+<div class="admin-page">
+    <section class="hero">
+        <div>
+            <p class="eyebrow">Admin Database Explorer</p>
+            <h1>See the app data in one place.</h1>
+            <p>
+                This page reads directly from the live SQLite database at
+                <span class="mono">{{ database_path }}</span> and shows each table with its newest rows.
+                Password values are masked before they reach the page.
+            </p>
+            <div class="anchor-row">
+                {% for section in sections %}
+                <a class="btn btn-soft" href="#{{ section.anchor }}">{{ section.title }}</a>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="hero-actions">
+            <a class="btn btn-soft" href="{{ url_for('auth.logout') }}">Logout</a>
+            <a class="btn btn-primary" href="{{ url_for('admin.dashboard') }}">Refresh Data</a>
+        </div>
+    </section>
+
+    <section class="stats">
+        {% for card in summary_cards %}
+        <div class="stat-card">
+            <h3>{{ card.label }}</h3>
+            <strong>{{ card.value }}</strong>
+            <span>{{ card.hint }}</span>
+        </div>
+        {% endfor %}
+    </section>
+
+    <section class="section-list">
+        {% for section in sections %}
+        <article class="panel" id="{{ section.anchor }}">
+            <div class="panel-head">
+                <div>
+                    <h2>{{ section.title }}</h2>
+                    <p class="subtle">{{ section.description }}</p>
+                </div>
+                <span class="pill pill-accent">{{ section.badge }}</span>
+            </div>
+
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            {% for column in section.columns %}
+                            <th>{{ column }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in section.rows %}
+                        <tr>
+                            {% for column in section.columns %}
+                            <td class="{% if 'Path' in column or 'File' in column or 'Email' in column %}mono{% endif %}">
+                                {{ row[column] }}
+                            </td>
+                            {% endfor %}
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td class="empty" colspan="{{ section.columns|length }}">No rows found in this table yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </article>
+        {% endfor %}
+    </section>
+</div>
+{% endblock %}

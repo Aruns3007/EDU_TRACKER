@@ -40,6 +40,7 @@ from routes.notes_routes import learning
 from routes.attendance_routes import att
 from routes.timetable_routes import time_table 
 from routes.teacher_routes import teacher
+from routes.admin_routes import admin
 from routes.reminder_routes import reminders
 
 app.register_blueprint(auth)
@@ -49,6 +50,7 @@ app.register_blueprint(learning)
 app.register_blueprint(att)
 app.register_blueprint(time_table) 
 app.register_blueprint(teacher)
+app.register_blueprint(admin)
 app.register_blueprint(reminders)
 
 # --- 6. Home Route ---

@@ -77,6 +77,8 @@ def _resolve_static_relative_path(relative_path):
 @teacher.route('/signup', methods=['GET', 'POST'])
 def teacher_signup():
     if current_user.is_authenticated:
+        if getattr(current_user, 'role', 'student') == 'admin':
+            return redirect(url_for('admin.dashboard'))
         if getattr(current_user, 'role', 'student') == 'teacher':
             return redirect(url_for('teacher.dashboard'))
         return redirect(url_for('dash.dashboard'))
@@ -125,6 +127,8 @@ def teacher_signup():
 @teacher.route('/login', methods=['GET', 'POST'])
 def teacher_login():
     if current_user.is_authenticated:
+        if getattr(current_user, 'role', 'student') == 'admin':
+            return redirect(url_for('admin.dashboard'))
         if getattr(current_user, 'role', 'student') == 'teacher':
             return redirect(url_for('teacher.dashboard'))
         return redirect(url_for('dash.dashboard'))

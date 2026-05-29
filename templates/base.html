@@ -182,7 +182,47 @@
 </head>
 <body class="{% block body_class %}{% endblock %}" style="display: flex; background-color: #0f172a; color: white; margin: 0; height: 100vh; overflow: hidden; font-family: 'Poppins', sans-serif;">
 
-    {% if current_user.is_authenticated and current_user.role == 'teacher' %}
+    {% if current_user.is_authenticated and current_user.role == 'admin' %}
+    <nav class="sidebar" style="width: 260px; background: #1e293b; padding: 30px 20px; display: flex; flex-direction: column; border-right: 1px solid rgba(255,255,255,0.05); flex-shrink: 0;">
+        <div class="logo" style="font-size: 1.5rem; font-weight: 700; color: #00f2ff; margin-bottom: 40px; letter-spacing: 1px; display: flex; align-items: center; gap: 10px;">
+            <span style="filter: drop-shadow(0 0 5px #00f2ff);">Admin</span> Panel
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 5px; flex-grow: 1;">
+            <div style="margin: 2px 0 8px; color: #94a3b8; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1.5px; padding: 0 12px;">
+                Database
+            </div>
+
+            <a href="{{ url_for('admin.dashboard') }}#users" class="{% if request.endpoint == 'admin.dashboard' %}active-page{% endif %}">
+                <span>Overview</span>
+            </a>
+            <a href="{{ url_for('admin.dashboard') }}#attendance">
+                <span>Attendance</span>
+            </a>
+            <a href="{{ url_for('admin.dashboard') }}#notes">
+                <span>Notes</span>
+            </a>
+            <a href="{{ url_for('admin.dashboard') }}#timetable">
+                <span>Timetable</span>
+            </a>
+            <a href="{{ url_for('admin.dashboard') }}#homework">
+                <span>Homework</span>
+            </a>
+            <a href="{{ url_for('admin.dashboard') }}#teacher-notes">
+                <span>Teacher Notes</span>
+            </a>
+            <a href="{{ url_for('admin.dashboard') }}#vault">
+                <span>Vault Docs</span>
+            </a>
+        </div>
+
+        <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;">
+            <a href="{{ url_for('auth.logout') }}" style="color: #ef4444; font-weight: 600; display: flex; align-items: center; gap: 12px; text-decoration: none; padding: 12px;">
+                <span>Logout</span>
+            </a>
+        </div>
+    </nav>
+    {% elif current_user.is_authenticated and current_user.role == 'teacher' %}
     <nav class="sidebar" style="width: 260px; background: #1e293b; padding: 30px 20px; display: flex; flex-direction: column; border-right: 1px solid rgba(255,255,255,0.05); flex-shrink: 0;">
         <div class="logo" style="font-size: 1.5rem; font-weight: 700; color: #00f2ff; margin-bottom: 40px; letter-spacing: 1px; display: flex; align-items: center; gap: 10px;">
             <span style="filter: drop-shadow(0 0 5px #00f2ff);">Teacher</span> Panel

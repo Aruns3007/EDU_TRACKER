@@ -9,6 +9,8 @@ auth = Blueprint('auth', __name__)
 def register():
     # If already logged in, skip registration
     if current_user.is_authenticated:
+        if getattr(current_user, 'role', 'student') == 'admin':
+            return redirect(url_for('admin.dashboard'))
         if getattr(current_user, 'role', 'student') == 'teacher':
             return redirect(url_for('teacher.dashboard'))
         return redirect(url_for('dash.dashboard'))
@@ -45,6 +47,8 @@ def register():
 @auth.route("/login", methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
+        if getattr(current_user, 'role', 'student') == 'admin':
+            return redirect(url_for('admin.dashboard'))
         if getattr(current_user, 'role', 'student') == 'teacher':
             return redirect(url_for('teacher.dashboard'))
         return redirect(url_for('dash.dashboard'))
@@ -55,14 +59,20 @@ def login():
         user = User.query.filter_by(email=email).first()
         
         # Verify user and password
-        if user and getattr(user, 'role', 'student') == 'student' and bcrypt.check_password_hash(user.password, password):
-            login_user(user, remember=bool(request.form.get('remember')))
-            next_page = request.args.get('next')
-            flash(f'Welcome back, {user.name}!', 'success')
-            return redirect(next_page) if next_page else redirect(url_for('dash.dashboard'))
-        elif user and getattr(user, 'role', 'student') == 'teacher':
-            flash('This is the student login. Please use the teacher login page.', 'warning')
-            return redirect(url_for('teacher.teacher_login'))
+        if user and bcrypt.check_password_hash(user.password, password):
+            role = getattr(user, 'role', 'student') or 'student'
+            if role in {'student', 'admin'}:
+                login_user(user, remember=bool(request.form.get('remember')))
+                next_page = request.args.get('next')
+                flash(f'Welcome back, {user.name}!', 'success')
+                if next_page:
+                    return redirect(next_page)
+                if role == 'admin':
+                    return redirect(url_for('admin.dashboard'))
+                return redirect(url_for('dash.dashboard'))
+            if role == 'teacher':
+                flash('This is the student login. Please use the teacher login page.', 'warning')
+                return redirect(url_for('teacher.teacher_login'))
         else:
             flash('Login Unsuccessful. Please check your email and password.', 'danger')
             

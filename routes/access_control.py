@@ -8,13 +8,34 @@ def _user_role(user):
     return getattr(user, 'role', 'student') or 'student'
 
 
+def admin_required(view):
+    @wraps(view)
+    def wrapped(*args, **kwargs):
+        if not current_user.is_authenticated:
+            return redirect(url_for('auth.login'))
+
+        if _user_role(current_user) != 'admin':
+            flash('Admin access required.', 'warning')
+            if _user_role(current_user) == 'teacher':
+                return redirect(url_for('teacher.dashboard'))
+            return redirect(url_for('dash.dashboard'))
+
+        return view(*args, **kwargs)
+
+    return wrapped
+
+
 def student_required(view):
     @wraps(view)
     def wrapped(*args, **kwargs):
         if not current_user.is_authenticated:
             return redirect(url_for('auth.login'))
 
-        if _user_role(current_user) != 'student':
+        role = _user_role(current_user)
+        if role == 'admin':
+            return redirect(url_for('admin.dashboard'))
+
+        if role != 'student':
             flash('This area is reserved for students.', 'warning')
             return redirect(url_for('teacher.dashboard'))
 
@@ -29,7 +50,11 @@ def teacher_required(view):
         if not current_user.is_authenticated:
             return redirect(url_for('teacher.teacher_login'))
 
-        if _user_role(current_user) != 'teacher':
+        role = _user_role(current_user)
+        if role == 'admin':
+            return redirect(url_for('admin.dashboard'))
+
+        if role != 'teacher':
             flash('Teacher access required.', 'warning')
             return redirect(url_for('auth.login'))
 

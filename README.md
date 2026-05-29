@@ -27,6 +27,24 @@ TEACHER_ACCESS_CODE=your-private-teacher-code
 python app.py
 ```
 
+## Deploying On PythonAnywhere
+
+1. Upload this project to your PythonAnywhere home directory, for example `/home/yourusername/Edu_tracker`.
+2. Create a virtualenv that matches the Python version you select for the web app.
+3. Install the dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+4. In the PythonAnywhere Web tab, choose `Manual configuration`, then set the virtualenv path to your environment.
+5. Open the WSGI configuration file and point it at the project root and `wsgi.application`.
+6. Add a static files mapping from `/static/` to `/home/yourusername/Edu_tracker/static`.
+7. Upload your existing `instance/database.db` if you want to keep the current data.
+8. Set `SECRET_KEY` and `TEACHER_ACCESS_CODE` in your environment before reloading the web app.
+
+The repository now includes a small [`wsgi.py`](./wsgi.py) entrypoint so the app can be imported cleanly by PythonAnywhere.
+
 ## Environment Variables
 
 - `SECRET_KEY`: Required for secure sessions.
@@ -43,3 +61,4 @@ python app.py
 - `requirements.txt` no longer includes `marked`; the UI uses the browser-side CDN version instead.
 - `use_reloader=False` is intentional to reduce SQLite file-lock issues on Windows. If you edit code while the server is running, restart the process manually.
 - The repository includes `.env.example` so new contributors have a clean setup template.
+- PythonAnywhere should import `wsgi.application` instead of calling `app.run()`.
