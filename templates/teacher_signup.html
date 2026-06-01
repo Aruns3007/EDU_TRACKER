@@ -2,6 +2,7 @@
 {% block body_class %}auth-page teacher-page{% endblock %}
 {% block head %}
 <link rel="stylesheet" href="{{ url_for('static', filename='auth.css') }}">
+<script defer src="{{ url_for('static', filename='auth.js') }}"></script>
 {% endblock %}
 {% block content %}
 <div class="auth-shell">
@@ -97,7 +98,10 @@
 
                 <div class="auth-field">
                     <label for="password">Password</label>
-                    <input type="password" id="password" name="password" required placeholder="Create password">
+                    <div class="auth-password">
+                        <input type="password" id="password" name="password" required placeholder="Create password" autocomplete="new-password">
+                        <button type="button" class="auth-password-toggle" data-password-toggle aria-controls="password" aria-pressed="false">Show</button>
+                    </div>
                 </div>
 
                 <div class="auth-field">
@@ -116,7 +120,10 @@
 
                 <div class="auth-field">
                     <label for="access_code">Teacher Access Code</label>
-                    <input type="password" id="access_code" name="access_code" required placeholder="Enter your teacher access code">
+                    <div class="auth-password">
+                        <input type="password" id="access_code" name="access_code" required placeholder="Enter your teacher access code" autocomplete="off">
+                        <button type="button" class="auth-password-toggle" data-password-toggle aria-controls="access_code" aria-pressed="false">Show</button>
+                    </div>
                 </div>
 
                 <button type="submit" class="auth-submit">Create Teacher Account</button>

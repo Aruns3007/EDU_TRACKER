@@ -2,6 +2,7 @@
 {% block body_class %}auth-page student-page{% endblock %}
 {% block head %}
 <link rel="stylesheet" href="{{ url_for('static', filename='auth.css') }}">
+<script defer src="{{ url_for('static', filename='auth.js') }}"></script>
 {% endblock %}
 {% block content %}
 <div class="auth-shell">
@@ -73,7 +74,13 @@
 
                 <div class="auth-field">
                     <label for="password">Access Key</label>
-                    <input type="password" id="password" name="password" required placeholder="Enter password">
+                    <div class="auth-password">
+                        <input type="password" id="password" name="password" required placeholder="Enter password" autocomplete="current-password">
+                        <button type="button" class="auth-password-toggle" data-password-toggle aria-controls="password" aria-pressed="false">Show</button>
+                    </div>
+                    <div class="auth-help-row">
+                        <a class="auth-forgot-link" href="{{ url_for('auth.forgot_password') }}">Forgot password?</a>
+                    </div>
                 </div>
 
                 <button type="submit" class="auth-submit">Continue to Dashboard</button>

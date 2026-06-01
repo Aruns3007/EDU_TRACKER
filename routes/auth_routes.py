@@ -78,6 +78,17 @@ def login():
             
     return render_template('login.html')
 
+@auth.route("/forgot-password")
+def forgot_password():
+    if current_user.is_authenticated:
+        if getattr(current_user, 'role', 'student') == 'admin':
+            return redirect(url_for('admin.dashboard'))
+        if getattr(current_user, 'role', 'student') == 'teacher':
+            return redirect(url_for('teacher.dashboard'))
+        return redirect(url_for('dash.dashboard'))
+
+    return render_template('forgot_password.html')
+
 @auth.route("/logout")
 def logout():
     logout_user()
